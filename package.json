@@ -9,8 +9,10 @@
     "start": "npm run lint && react-native start --experimental-debugger --reset-cache",
     "regenerate-platform": "npx react-native eject",
     "start:debug": "npm run lint && npx react-native start --experimental-debugger --reset-cache",
-    "build:debug": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res/ && cd android && gradlew.bat assembleDebug",
-    "install:debug": "npm run build:debug && cd android && adb install app/build/outputs/apk/debug/app-debug.apk",
+    "build:prepare": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res/",
+    "android:build-debug": "npm run build:prepare && cd android && ./gradlew assembleDebug",
+    "android:permit": "cd android && chmod +x ./gradlew",
+    "android:installdebug": "npm run build:debug && cd android && adb install app/build/outputs/apk/debug/app-debug.apk",
     "devtools": "react-devtools",
     "link": "npx react-native-asset",
     "test": "jest"

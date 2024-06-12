@@ -19,14 +19,20 @@ export class LanguageService extends AbstractLanguageService<StorageService> {
         this.getLanguageText(currentLanguage);
     }
 
-    /** Set language to store */
+    /**
+     * Set language to store
+     * @param value 
+     */
     public async setLanguage(value: string): Promise<void> {
         const me = this;
         await me.storeService.saveObject<string>(StorageKey.language, value);
         me.getLanguageText(value);
     }
 
-    /** Get language text from json */
+    /**
+     * Get language text from json
+     * @param value 
+     */
     public getLanguageText(value: string): void {
         const me = this;
         if (value == LanguageCode.EN) {
