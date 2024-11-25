@@ -75,3 +75,8 @@ yarn-error.log
 
 yarn.lock
 package-lock.json
+
+# Android
+android/
+# Ios
+ios/
