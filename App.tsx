@@ -1,8 +1,8 @@
 import 'reflect-metadata';
 import { container } from 'tsyringe';
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, StatusBar, useColorScheme } from 'react-native';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
+import { StatusBar, useColorScheme } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import NavigationContainerComponents from './src/common/components/NavigationContainerComponents';
 import AppStyle from './App.style';
 import { LanguageService } from './src/services/logic/languageSerivce';
@@ -13,7 +13,7 @@ function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   const appStyle = AppStyle();
   const statusbarColor = {
-    backgroundColor: isDarkMode ? Colors.light : Colors.dark
+    backgroundColor: isDarkMode ? '#FFF' : '#000'
   };
 
   async function init(): Promise<void> {
