@@ -10,10 +10,6 @@ function Home(): React.JSX.Element {
     const elHook = HomeHook();
     const homeStyle = HomeStyle();
 
-    async function changeLanguage(language: string): Promise<void>{
-        await languageHook.changeLanguage(language);
-    }
-
     if (elHook) {
         return (
             <Fragment>
@@ -22,8 +18,8 @@ function Home(): React.JSX.Element {
                         {languageHook.text?.menu?.home}
                     </Text>
                     <View>
-                        <Button title='Vietnamese' onPress={() => changeLanguage(LanguageCode.VI)}></Button>
-                        <Button title='English' onPress={() => changeLanguage(LanguageCode.EN)}></Button>
+                        <Button title='Vietnamese' onPress={() => languageHook.changeLanguage(LanguageCode.VI)}></Button>
+                        <Button title='English' onPress={() => languageHook.changeLanguage(LanguageCode.EN)}></Button>
                     </View>
                 </ScrollView>
             </Fragment>
