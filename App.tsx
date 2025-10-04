@@ -1,14 +1,13 @@
 import 'reflect-metadata';
-import { container } from 'tsyringe';
 import React, { useEffect, useState } from 'react';
 import { StatusBar, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import NavigationContainerComponents from './src/common/components/NavigationContainerComponents';
 import AppStyle from './App.style';
-import { LanguageService } from './src/services/logic/languageSerivce';
+import LanguageHook from './src/common/hook/LanguageHook';
 
 function App(): React.JSX.Element {
-  const languageService = container.resolve(LanguageService);
+  const languageHook = LanguageHook();
   const [isReady, setIsReady] = useState(false);
   const isDarkMode = useColorScheme() === 'dark';
   const appStyle = AppStyle();
@@ -17,7 +16,7 @@ function App(): React.JSX.Element {
   };
 
   async function init(): Promise<void> {
-    await languageService.initLanguage();
+    await languageHook.languageService.initLanguage();
     setIsReady(true);
   }
 

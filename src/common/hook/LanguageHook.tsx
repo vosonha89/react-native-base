@@ -3,6 +3,7 @@ import { container } from 'tsyringe';
 import { useEffect, useState } from 'react';
 import { LanguageText } from '../../types/languageText';
 import { LanguageService } from '../../services/logic/languageSerivce';
+import { NativeAppEventEmitter } from 'react-native';
 
 /**
  * For global language hook
@@ -13,16 +14,26 @@ function LanguageHook() {
     const [text, setText] = useState(languageService.text as LanguageText);
 
     async function changeLanguage(language: string): Promise<void> {
-        await languageService.setLanguage(language);
-        setText(languageService.text);
+        NativeAppEventEmitter.emit('languageChanged', language);
     }
 
     useEffect(() => {
-    }, []);
+        async function onLanguageChanged(e: string): Promise<void> {
+            const value = e;
+            await languageService.setLanguage(value);
+            const languageText = languageService.text;
+            setText(languageText);
+        }
+        const languageEmitter = NativeAppEventEmitter.addListener('languageChanged', onLanguageChanged);
+        return () => {
+            languageEmitter?.remove();
+        };
+    }, [languageService]);
 
     return {
         text,
-        changeLanguage
+        changeLanguage,
+        languageService
     };
 }
 
