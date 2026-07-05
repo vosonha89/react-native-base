@@ -1,5 +1,3 @@
-import type { Listener } from './types';
-
 class AppEventEmitter {
   private listeners: Map<string, Set<(...args: any[]) => void>> = new Map();
 
@@ -26,7 +24,6 @@ class AppEventEmitter {
       } catch (err) {
         // swallow to avoid breaking other listeners
         // but log for debugging
-        // eslint-disable-next-line no-console
         console.error('AppEventEmitter listener error:', err);
       }
     });
