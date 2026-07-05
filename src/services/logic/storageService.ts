@@ -22,9 +22,9 @@ async function retry<T>(fn: () => Promise<T>, retries = 1): Promise<T> {
 export class StorageService extends AbstractStorageService {
   /**
    * Save object
-   * @param key 
-   * @param value 
-   * @returns 
+   * @param key
+   * @param value
+   * @returns
    */
   public async saveObject<T>(key: string, value: T): Promise<boolean> {
     if (!key) {
@@ -36,15 +36,18 @@ export class StorageService extends AbstractStorageService {
       await retry(() => AsyncStorage.setItem(key, jsonValue));
       return true;
     } catch (e) {
-      console.error(`StorageService.saveObject: Error saving value for key=${key}`, e);
+      console.error(
+        `StorageService.saveObject: Error saving value for key=${key}`,
+        e,
+      );
       return false;
     }
   }
 
   /**
    * Get object
-   * @param key 
-   * @returns 
+   * @param key
+   * @returns
    */
   public async getObject<T>(key: string): Promise<T | undefined> {
     if (!key) {
@@ -57,19 +60,25 @@ export class StorageService extends AbstractStorageService {
       try {
         return JSON.parse(jsonValue) as T;
       } catch (parseError) {
-        console.error(`StorageService.getObject: Failed to parse JSON for key=${key}`, parseError);
+        console.error(
+          `StorageService.getObject: Failed to parse JSON for key=${key}`,
+          parseError,
+        );
         return undefined;
       }
     } catch (e) {
-      console.error(`StorageService.getObject: Error loading value for key=${key}`, e);
+      console.error(
+        `StorageService.getObject: Error loading value for key=${key}`,
+        e,
+      );
       return undefined;
     }
   }
 
   /**
    * Delete object
-   * @param key 
-   * @returns 
+   * @param key
+   * @returns
    */
   public async deleteObject(key: string): Promise<boolean> {
     if (!key) {
@@ -80,7 +89,10 @@ export class StorageService extends AbstractStorageService {
       await retry(() => AsyncStorage.removeItem(key));
       return true;
     } catch (e) {
-      console.error(`StorageService.deleteObject: Error removing value for key=${key}`, e);
+      console.error(
+        `StorageService.deleteObject: Error removing value for key=${key}`,
+        e,
+      );
       return false;
     }
   }

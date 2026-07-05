@@ -5,29 +5,29 @@ import { HomeState } from './Home.state';
 
 /**
  * Hook for view
- * @returns 
+ * @returns
  */
 function HomeHook() {
-    const [componentState, setComponentState] = useState(new HomeState());
-    // const navigation = useNavigation<NavigationProp<AppRouteParamList>>();
+  const [componentState, setComponentState] = useState(new HomeState());
+  // const navigation = useNavigation<NavigationProp<AppRouteParamList>>();
 
-    /**
-     * Load page
-     */
-    async function loadPage(): Promise<void> {
-        const pageState: HomeState = componentState.copy();
-        await pageState.init();
-        setComponentState(pageState);
-    }
+  /**
+   * Load page
+   */
+  async function loadPage(): Promise<void> {
+    const pageState: HomeState = componentState.copy();
+    await pageState.init();
+    setComponentState(pageState);
+  }
 
-    useEffect(() => {
-        // userEffect implement here
-        loadPage();
-        console.log('Home load');
-    }, []);
-    return {
-        componentState
-    };
+  useEffect(() => {
+    // userEffect implement here
+    loadPage();
+    console.log('Home load');
+  }, []);
+  return {
+    componentState,
+  };
 }
 
 export default HomeHook;

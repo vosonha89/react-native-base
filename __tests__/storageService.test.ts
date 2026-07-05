@@ -4,7 +4,7 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
   setItem: jest.fn(),
   getItem: jest.fn(),
   removeItem: jest.fn(),
-  clear: jest.fn()
+  clear: jest.fn(),
 }));
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -26,7 +26,9 @@ describe('StorageService', () => {
     mockAsync.clear.mockResolvedValue(undefined);
 
     await expect(service.saveObject('key1', { a: 1 })).resolves.toBe(true);
-    await expect(service.getObject<{ a: number }>('key1')).resolves.toEqual({ a: 1 });
+    await expect(service.getObject<{ a: number }>('key1')).resolves.toEqual({
+      a: 1,
+    });
     await expect(service.deleteObject('key1')).resolves.toBe(true);
     await expect(service.clear()).resolves.toBeUndefined();
 

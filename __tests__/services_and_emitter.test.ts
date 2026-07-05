@@ -24,7 +24,10 @@ describe('AppEventEmitter', () => {
 describe('LanguageService (unit)', () => {
   test('initLanguage falls back to default when storage missing', async () => {
     const svc = new LanguageService();
-    svc.storeService = { getObject: jest.fn().mockResolvedValue(undefined), saveObject: jest.fn() } as any;
+    svc.storeService = {
+      getObject: jest.fn().mockResolvedValue(undefined),
+      saveObject: jest.fn(),
+    } as any;
     await svc.initLanguage();
     // text should be set to some object (default VI)
     expect(svc.text).toBeDefined();
@@ -32,16 +35,25 @@ describe('LanguageService (unit)', () => {
 
   test('setLanguage persists normalized language and updates text', async () => {
     const svc = new LanguageService();
-    const fakeStore = { getObject: jest.fn(), saveObject: jest.fn().mockResolvedValue(true) } as any;
+    const fakeStore = {
+      getObject: jest.fn(),
+      saveObject: jest.fn().mockResolvedValue(true),
+    } as any;
     svc.storeService = fakeStore;
     await svc.setLanguage(LanguageCode.EN);
-    expect(fakeStore.saveObject).toHaveBeenCalledWith(StorageKey.language, LanguageCode.EN);
+    expect(fakeStore.saveObject).toHaveBeenCalledWith(
+      StorageKey.language,
+      LanguageCode.EN,
+    );
     expect(svc.text).toBeDefined();
   });
 
   test('setLanguage handles storage failures gracefully', async () => {
     const svc = new LanguageService();
-    const fakeStore = { getObject: jest.fn(), saveObject: jest.fn().mockRejectedValue(new Error('boom')) } as any;
+    const fakeStore = {
+      getObject: jest.fn(),
+      saveObject: jest.fn().mockRejectedValue(new Error('boom')),
+    } as any;
     svc.storeService = fakeStore;
     await expect(svc.setLanguage('invalid' as string)).resolves.toBeUndefined();
     // should still update in-memory text

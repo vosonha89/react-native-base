@@ -17,17 +17,21 @@ const fs = require('fs');
 const path = require('path');
 
 const RAW_BASE = path.resolve(__dirname, '..', 'assets', 'language', 'raw');
-const OUT      = path.resolve(__dirname, '..', 'assets', 'language');
-const TYPES    = path.resolve(__dirname, '..', 'src', 'types', 'languageText.ts');
+const OUT = path.resolve(__dirname, '..', 'assets', 'language');
+const TYPES = path.resolve(__dirname, '..', 'src', 'types', 'languageText.ts');
 
-const LOCALES    = ['en', 'vi'];
+const LOCALES = ['en', 'vi'];
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 /** Deep‑merge `src` into `target` (mutates target). */
 function deepMerge(target, src) {
   for (const key of Object.keys(src)) {
-    if (src[key] !== null && typeof src[key] === 'object' && !Array.isArray(src[key])) {
+    if (
+      src[key] !== null &&
+      typeof src[key] === 'object' &&
+      !Array.isArray(src[key])
+    ) {
       if (!target[key] || typeof target[key] !== 'object') target[key] = {};
       deepMerge(target[key], src[key]);
     } else {
@@ -44,7 +48,10 @@ function loadLocale(locale) {
     console.warn(`  ⚠  locale directory not found: ${dir}`);
     return {};
   }
-  const files = fs.readdirSync(dir).filter(f => f.endsWith('.json')).sort();
+  const files = fs
+    .readdirSync(dir)
+    .filter(f => f.endsWith('.json'))
+    .sort();
   const merged = {};
   for (const file of files) {
     const raw = fs.readFileSync(path.join(dir, file), 'utf-8');
@@ -166,10 +173,16 @@ function main() {
     }
   }
   if (!hasMissing) {
-    console.log(`  ✓  multiple files coverage: all ${LOCALES.length} locales have the same set of keys.`);
+    console.log(
+      `  ✓  multiple files coverage: all ${LOCALES.length} locales have the same set of keys.`,
+    );
   } else {
-    console.warn('\n  ⚠  Some locales are missing keys. The generated interface will');
-    console.warn('      include all keys, but missing ones will be undefined at runtime.');
+    console.warn(
+      '\n  ⚠  Some locales are missing keys. The generated interface will',
+    );
+    console.warn(
+      '      include all keys, but missing ones will be undefined at runtime.',
+    );
     console.warn('      Make sure to add them before shipping.\n');
   }
   console.log();
@@ -195,7 +208,12 @@ function main() {
   // 5. Summary
   const totalFiles = LOCALES.reduce((sum, l) => {
     const dir = path.join(RAW_BASE, l);
-    return sum + (fs.existsSync(dir) ? fs.readdirSync(dir).filter(f => f.endsWith('.json')).length : 0);
+    return (
+      sum +
+      (fs.existsSync(dir)
+        ? fs.readdirSync(dir).filter(f => f.endsWith('.json')).length
+        : 0)
+    );
   }, 0);
   const totalKeys = allKeys.size;
   console.log(`  📊  Summary`);

@@ -12,7 +12,7 @@ function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   const appStyle = AppStyle();
   const statusbarColor = {
-    backgroundColor: isDarkMode ? '#FFF' : '#000'
+    backgroundColor: isDarkMode ? '#FFF' : '#000',
   };
 
   async function init(): Promise<void> {
@@ -35,8 +35,7 @@ function App(): React.JSX.Element {
         <NavigationContainerComponents />
       </SafeAreaView>
     );
-  }
-  else {
+  } else {
     return <SafeAreaView></SafeAreaView>;
   }
 }
