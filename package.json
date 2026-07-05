@@ -16,6 +16,7 @@
     "android:permit": "cd android && chmod +x ./gradlew",
     "android:installdebug": "npm run build:debug && cd android && adb install app/build/outputs/apk/debug/app-debug.apk",
     "devtools": "react-devtools",
+    "language:gen": "node __script_/languageGen.js",
     "link": "npx react-native-asset",
     "test": "jest"
   },
