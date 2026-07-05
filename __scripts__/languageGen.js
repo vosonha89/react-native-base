@@ -1,5 +1,5 @@
 /**
- * language:gen — Merge raw i18n JSON files & generate TypeScript interface
+ * language:gen — Merge raw multiple files JSON files & generate TypeScript interface
  *
  *   assets/language/raw/en/*.json  ───────────────────┐
  *   assets/language/raw/vi/*.json  ──► merge ──► en.json / vi.json
@@ -166,7 +166,7 @@ function main() {
     }
   }
   if (!hasMissing) {
-    console.log(`  ✓  i18n coverage: all ${LOCALES.length} locales have the same set of keys.`);
+    console.log(`  ✓  multiple files coverage: all ${LOCALES.length} locales have the same set of keys.`);
   } else {
     console.warn('\n  ⚠  Some locales are missing keys. The generated interface will');
     console.warn('      include all keys, but missing ones will be undefined at runtime.');

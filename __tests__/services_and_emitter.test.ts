@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals';
-import { appEventEmitter } from '../src/common/utils/AppEventEmitter';
+import { appEventEmitter } from '../src/common/utils/appEventEmitter';
 import { LanguageService } from '../src/services/logic/languageSerivce';
 import { LanguageCode, StorageKey } from 'one-frontend-framework';
 

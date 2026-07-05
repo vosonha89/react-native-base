@@ -3,38 +3,38 @@ import { container } from 'tsyringe';
 import { useEffect, useState } from 'react';
 import { LanguageText } from '../../types/languageText';
 import { LanguageService } from '../../services/logic/languageSerivce';
-import { appEventEmitter } from '../utils/AppEventEmitter';
+import { appEventEmitter } from '../utils/appEventEmitter';
 
 /**
  * For global language hook
- * @returns 
+ * @returns
  */
 function LanguageHook() {
-    const languageService = container.resolve(LanguageService);
-    const [text, setText] = useState(languageService.text as LanguageText);
+  const languageService = container.resolve(LanguageService);
+  const [text, setText] = useState(languageService.text as LanguageText);
 
-    async function changeLanguage(language: string): Promise<void> {
-        appEventEmitter.emit('languageChanged', language);
+  async function changeLanguage(language: string): Promise<void> {
+    appEventEmitter.emit('languageChanged', language);
+  }
+
+  useEffect(() => {
+    async function onLanguageChanged(e: string): Promise<void> {
+      const value = e;
+      await languageService.setLanguage(value);
+      const languageText = languageService.text;
+      setText(languageText);
     }
-
-    useEffect(() => {
-        async function onLanguageChanged(e: string): Promise<void> {
-            const value = e;
-            await languageService.setLanguage(value);
-            const languageText = languageService.text;
-            setText(languageText);
-        }
-        appEventEmitter.on('languageChanged', onLanguageChanged);
-        return () => {
-            appEventEmitter.off('languageChanged', onLanguageChanged);
-        };
-    }, [languageService]);
-
-    return {
-        text,
-        changeLanguage,
-        languageService
+    appEventEmitter.on('languageChanged', onLanguageChanged);
+    return () => {
+      appEventEmitter.off('languageChanged', onLanguageChanged);
     };
+  }, [languageService]);
+
+  return {
+    text,
+    changeLanguage,
+    languageService,
+  };
 }
 
 export default LanguageHook;

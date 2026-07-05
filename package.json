@@ -16,9 +16,12 @@
     "android:permit": "cd android && chmod +x ./gradlew",
     "android:installdebug": "npm run build:debug && cd android && adb install app/build/outputs/apk/debug/app-debug.apk",
     "devtools": "react-devtools",
-    "language:gen": "node __script_/languageGen.js",
+    "language:gen": "node __scripts__/languageGen.js",
+    "view:gen": "node __scripts__/viewGen.js",
     "link": "npx react-native-asset",
-    "test": "jest"
+    "test": "jest",
+    "format:check": "prettier --check .",
+    "format:write": "prettier --write ."
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "3.1.1",

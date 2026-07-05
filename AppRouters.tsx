@@ -6,12 +6,10 @@ export class AppScreenProps {
 }
 
 export type AppSreenStackParamList = {
-    Login: AppScreenProps;
     Home: AppScreenProps;
 };
 
 export type AppRouteParamList = {
-    Login: 'Login';
     Home: 'Home';
 };
 
