@@ -3,6 +3,10 @@ import { HomeState } from './Home.state';
 // import { NavigationProp, useNavigation } from '@react-navigation/native';
 // import { AppRouteParamList } from '../../../AppRouters';
 
+/**
+ * Hook for view
+ * @returns 
+ */
 function HomeHook() {
     const [componentState, setComponentState] = useState(new HomeState());
     // const navigation = useNavigation<NavigationProp<AppRouteParamList>>();

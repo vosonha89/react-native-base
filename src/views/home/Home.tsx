@@ -5,16 +5,19 @@ import { Button, ScrollView, Text, View } from 'react-native';
 import LanguageHook from '../../common/hook/LanguageHook';
 import { LanguageCode } from 'one-frontend-framework';
 
+/**
+ * View
+ * @returns 
+ */
 function Home(): React.JSX.Element {
     const languageHook = LanguageHook();
     const elHook = HomeHook();
-    const homeStyle = HomeStyle();
 
-    if (elHook) {
+    if (elHook.componentState.isReady) {
         return (
             <Fragment>
                 <ScrollView showsVerticalScrollIndicator={false}>
-                    <Text style={homeStyle.default}>
+                    <Text style={HomeStyle.default}>
                         {languageHook.text?.menu?.home}
                     </Text>
                     <View>
