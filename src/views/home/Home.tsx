@@ -5,30 +5,36 @@ import { Button, ScrollView, Text, View } from 'react-native';
 import LanguageHook from '../../common/hook/LanguageHook';
 import { LanguageCode } from 'one-frontend-framework';
 
-function Home(): React.JSX.Element {
-    const languageHook = LanguageHook();
-    const elHook = HomeHook();
-    const homeStyle = HomeStyle();
+/**
+ * Home screen view.
+ * Displays language switch buttons and the current language text.
+ * @returns the Home JSX element.
+ */
+export function Home(): React.JSX.Element {
+  const languageHook = LanguageHook();
+  const elHook = HomeHook();
 
-    if (elHook) {
-        return (
-            <Fragment>
-                <ScrollView showsVerticalScrollIndicator={false}>
-                    <Text style={homeStyle.default}>
-                        {languageHook.text?.menu?.home}
-                    </Text>
-                    <View>
-                        <Button title='Vietnamese' onPress={() => languageHook.changeLanguage(LanguageCode.VI)}></Button>
-                        <Button title='English' onPress={() => languageHook.changeLanguage(LanguageCode.EN)}></Button>
-                    </View>
-                </ScrollView>
-            </Fragment>
-        );
-    } else {
-        return (
-            <Fragment></Fragment>
-        );
-    }
+  if (elHook.componentState.isReady) {
+    return (
+      <Fragment>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <Text style={HomeStyle.default}>{languageHook.text?.menu?.home}</Text>
+          <View>
+            <Button
+              title="Vietnamese"
+              onPress={() => languageHook.changeLanguage(LanguageCode.VI)}
+            ></Button>
+            <Button
+              title="English"
+              onPress={() => languageHook.changeLanguage(LanguageCode.EN)}
+            ></Button>
+          </View>
+        </ScrollView>
+      </Fragment>
+    );
+  } else {
+    return <Fragment></Fragment>;
+  }
 }
 
 export default Home;

@@ -3,38 +3,43 @@ import { container } from 'tsyringe';
 import { useEffect, useState } from 'react';
 import { LanguageText } from '../../types/languageText';
 import { LanguageService } from '../../services/logic/languageSerivce';
-import { NativeAppEventEmitter } from 'react-native';
+import { appEventEmitter } from '../utils/appEventEmitter';
 
 /**
- * For global language hook
- * @returns 
+ * Global language hook for reactive language switching.
+ * Provides current language text and a changeLanguage function.
+ * @returns the current language text, change function, and service instance.
  */
-function LanguageHook() {
-    const languageService = container.resolve(LanguageService);
-    const [text, setText] = useState(languageService.text as LanguageText);
+export function LanguageHook() {
+  const languageService = container.resolve(LanguageService);
+  const [text, setText] = useState(languageService.text as LanguageText);
 
-    async function changeLanguage(language: string): Promise<void> {
-        NativeAppEventEmitter.emit('languageChanged', language);
+  /**
+   * Change the active language.
+   * @param language - language code to switch to.
+   */
+  async function changeLanguage(language: string): Promise<void> {
+    appEventEmitter.emit('languageChanged', language);
+  }
+
+  useEffect(() => {
+    async function onLanguageChanged(e: string): Promise<void> {
+      const value = e;
+      await languageService.setLanguage(value);
+      const languageText = languageService.text;
+      setText(languageText);
     }
-
-    useEffect(() => {
-        async function onLanguageChanged(e: string): Promise<void> {
-            const value = e;
-            await languageService.setLanguage(value);
-            const languageText = languageService.text;
-            setText(languageText);
-        }
-        const languageEmitter = NativeAppEventEmitter.addListener('languageChanged', onLanguageChanged);
-        return () => {
-            languageEmitter?.remove();
-        };
-    }, [languageService]);
-
-    return {
-        text,
-        changeLanguage,
-        languageService
+    appEventEmitter.on('languageChanged', onLanguageChanged);
+    return () => {
+      appEventEmitter.off('languageChanged', onLanguageChanged);
     };
+  }, [languageService]);
+
+  return {
+    text,
+    changeLanguage,
+    languageService,
+  };
 }
 
 export default LanguageHook;

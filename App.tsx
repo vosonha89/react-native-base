@@ -6,15 +6,23 @@ import NavigationContainerComponents from './src/common/components/NavigationCon
 import AppStyle from './App.style';
 import LanguageHook from './src/common/hook/LanguageHook';
 
-function App(): React.JSX.Element {
+/**
+ * Root application component.
+ * Sets up theme, language, and navigation.
+ * @returns the root JSX element.
+ */
+export function App(): React.JSX.Element {
   const languageHook = LanguageHook();
   const [isReady, setIsReady] = useState(false);
   const isDarkMode = useColorScheme() === 'dark';
   const appStyle = AppStyle();
   const statusbarColor = {
-    backgroundColor: isDarkMode ? '#FFF' : '#000'
+    backgroundColor: isDarkMode ? '#FFF' : '#000',
   };
 
+  /**
+   * Initialize language and mark app as ready.
+   */
   async function init(): Promise<void> {
     await languageHook.languageService.initLanguage();
     setIsReady(true);
@@ -35,8 +43,7 @@ function App(): React.JSX.Element {
         <NavigationContainerComponents />
       </SafeAreaView>
     );
-  }
-  else {
+  } else {
     return <SafeAreaView></SafeAreaView>;
   }
 }

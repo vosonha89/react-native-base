@@ -1,7 +1,7 @@
-import globals from "globals";
-import pluginJs from "@eslint/js";
-import tseslint from "typescript-eslint";
-import pluginReactConfig from "eslint-plugin-react/configs/recommended.js";
+import globals from 'globals';
+import pluginJs from '@eslint/js';
+import tseslint from 'typescript-eslint';
+import pluginReactConfig from 'eslint-plugin-react/configs/recommended.js';
 
 export default [
   {
@@ -11,51 +11,22 @@ export default [
   ...tseslint.configs.recommended,
   pluginReactConfig,
   {
-    settings: { react: { version: "detect" } },
+    settings: { react: { version: 'detect' } },
     rules: {
-      'prettier/prettier': 0,
-      "semi": "off",
-      "@typescript-eslint/no-explicit-any": "warn",
-      "@typescript-eslint/semi": [
-        "error",
-        "always"
-      ],
-      "@typescript-eslint/space-before-function-paren": [
-        "off",
-        "never"
-      ],
-      "@typescript-eslint/indent": "off",
-      "@typescript-eslint/no-var-requires": 0,
-      "unicode-bom": 0,
-      "@typescript-eslint/no-extraneous-class": "off",
-      "@typescript-eslint/member-delimiter-style": [
-        "error",
+      semi: ['error', 'always'],
+      'no-debugger': 'off',
+      'no-useless-constructor': 'off',
+      'no-var': 'off',
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-var-requires': 'off',
+      '@typescript-eslint/no-extraneous-class': 'off',
+      '@typescript-eslint/no-this-alias': [
+        'error',
         {
-          "multiline": {
-            "delimiter": "semi",
-            "requireLast": true
-          },
-          "singleline": {
-            "delimiter": "semi",
-            "requireLast": false
-          },
-          "multilineDetection": "brackets"
-        }
+          allowDestructuring: true,
+          allowedNames: ['me'],
+        },
       ],
-      "@typescript-eslint/no-this-alias": [
-        "error",
-        {
-          "allowDestructuring": true,
-          // Allow `const { props, state } = this`; false by default
-          "allowedNames": [
-            "me"
-          ]
-          // Allow `const me= this`; `[]` by default
-        }
-      ],
-      "@typescript-eslint/consistent-type-assertions": "warn",
-      "@typescript-eslint/no-useless-constructor": "off",
-      "no-debugger": "off"
-    }
-  }
+    },
+  },
 ];
