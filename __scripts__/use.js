@@ -213,7 +213,7 @@ async function main() {
   log('  Next steps:');
   log('    cd ' + path.basename(ROOT));
   log('    npx react-native eject   # regenerate native platform folders');
-  log('    npm run android          # or: npm run ios');
+  log('    npm run start:android    # or: npm run start:ios');
   log('');
   log('  📁  Source files are at  src/');
   log('  🔤  Language files are at  assets/language/');

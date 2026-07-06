@@ -87,7 +87,7 @@ main() {
   echo "      cd $KEBAB"
   echo "      npm install"
   echo "      npx react-native eject"
-  echo "      npm run android          # or: npm run ios"
+  echo "      npm run start:android    # or: npm run start:ios"
   echo ""
   echo "    📁  Source files are at  src/"
   echo "    🔤  Language files are at  assets/language/"
