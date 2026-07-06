@@ -43,8 +43,9 @@ main() {
   header
 
   # Interactive prompt if no name provided
+  # Use /dev/tty because stdin is the pipe (curl | bash), not the terminal
   if [ -z "$NAME" ]; then
-    read -rp "  Project name (PascalCase, e.g. MyApp): " NAME
+    read -rp "  Project name (PascalCase, e.g. MyApp): " NAME </dev/tty
   fi
 
   # Validate
