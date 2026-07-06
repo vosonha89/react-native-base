@@ -58,7 +58,23 @@ main() {
     err "Invalid name \"$NAME\". Must be PascalCase, e.g. MyApp, AwesomeProject."
   fi
 
+  # Interactive prompt if no namespace provided
+  # Use /dev/tty because stdin is the pipe (curl | bash), not the terminal
   KEBAB=$(pascal_to_kebab "$NAME")
+  DEFAULT_NS="com.$(echo "$KEBAB" | tr -d '-')"
+  if [ -z "$NAMESPACE" ]; then
+    read -rp "  Android/iOS namespace (press Enter for default: $DEFAULT_NS): " NAMESPACE </dev/tty
+    if [ -z "$NAMESPACE" ]; then
+      NAMESPACE="$DEFAULT_NS"
+    fi
+  fi
+
+  # Validate namespace format
+  if [ -n "$NAMESPACE" ]; then
+    if ! echo "$NAMESPACE" | grep -qE '^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$'; then
+      err "Invalid namespace \"$NAMESPACE\". Must be reverse-DNS, e.g. com.myapp or com.acme.myapp."
+    fi
+  fi
 
   echo ""
 
@@ -72,13 +88,9 @@ main() {
 
   echo ""
 
-  # Run the inner rename script — pipe "n" to skip the install prompt
+  # Run the inner rename script with --no-install so it never reads from stdin
   ok "Renaming project → $NAME"
-  if [ -n "$NAMESPACE" ]; then
-    (cd "$KEBAB" && node __scripts__/use.js --name="$NAME" --namespace="$NAMESPACE" <<< "n")
-  else
-    (cd "$KEBAB" && node __scripts__/use.js --name="$NAME" <<< "n")
-  fi
+  (cd "$KEBAB" && node __scripts__/use.js --name="$NAME" --namespace="$NAMESPACE" --no-install)
 
   echo ""
 
