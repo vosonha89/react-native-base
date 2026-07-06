@@ -156,22 +156,63 @@ function patchAppJson(name) {
   );
 }
 
+/* ──────────────────── safety checks ──────────────────── */
+
+/**
+ * Check if we're inside a nested directory of another npm project.
+ * This catches the case where someone ran degit inside an existing
+ * project folder, causing deeply nested directories.
+ */
+function detectNestedProject() {
+  const parentPkg = path.resolve(ROOT, '..', 'package.json');
+  if (fs.existsSync(parentPkg)) {
+    const parent = readJson(parentPkg);
+    if (parent.name) {
+      console.error(
+        `  ⚠  Warning: you're inside "${parent.name}" (found ../package.json).\n` +
+          '     Did you run degit from inside an existing project folder?\n' +
+          '     Run "rm -rf ' +
+          path.basename(ROOT) +
+          '" and re-run from an empty parent directory.\n',
+      );
+      return new Promise(resolve => {
+        const rl = readline.createInterface({
+          input: process.stdin,
+          output: process.stdout,
+        });
+        rl.question('  Continue anyway? (y/N) ', answer => {
+          rl.close();
+          const trimmed = answer.trim().toLowerCase();
+          resolve(trimmed === 'y' || trimmed === 'yes');
+        });
+      });
+    }
+  }
+  return Promise.resolve(true);
+}
+
 /* ───────────────────────── main ───────────────────────── */
 
 async function main() {
   console.log(HEADER);
-
-  let { name } = parseArgs();
-  if (!name) {
-    name = await promptName();
-  }
-  validateName(name);
 
   // Safety: confirm destination is a fresh template
   const pkgPath = path.join(ROOT, 'package.json');
   if (!fs.existsSync(pkgPath)) {
     bail('No package.json found. Are you in the template root directory?');
   }
+
+  const ok = await detectNestedProject();
+  if (!ok) {
+    log('Cancelled.');
+    process.exit(0);
+  }
+
+  let { name } = parseArgs();
+  if (!name) {
+    name = await promptName();
+  }
+  validateName(name);
 
   console.log('');
 

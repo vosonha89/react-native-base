@@ -2,31 +2,51 @@
 
 Scaffold a new project from this template using [`degit`](https://github.com/Rich-Harris/degit) (no git history, no extra package needed).
 
+> ⚠️ **Important:** Run these commands from an **empty parent directory** (e.g. `~/Projects/`), not from inside an existing project folder. Running degit inside an existing folder with the same name will create nested directories.
+
 ### Latest template
 
 ```bash
-npx degit vosonha89/react-native-base my-app && cd my-app && node __scripts__/use.js --name=MyApp
+# 1. Clone the template into my-app/
+npx degit --force vosonha89/react-native-base my-app
+
+# 2. Enter the new project
+cd my-app
+
+# 3. Rename it to your project name (PascalCase)
+node __scripts__/use.js --name=MyApp
 ```
 
 ### Pinned to a specific version
 
 ```bash
-npx degit vosonha89/react-native-base#v0.0.1 my-app && cd my-app && node __scripts__/use.js --name=MyApp
+# 1. Clone a specific tagged release into my-app/
+npx degit --force vosonha89/react-native-base#v0.0.1 my-app
+
+# 2. Enter the new project
+cd my-app
+
+# 3. Rename it to your project name (PascalCase)
+node __scripts__/use.js --name=MyApp
 ```
 
-> **Note:** The `#v0.0.1` form requires a [tagged release](https://github.com/vosonha89/react-native-base/tags) on the repository. Omit it to always pull the latest from the default branch.
+> **Note:** The `#v0.0.1` form requires a [tagged release](https://github.com/vosonha89/react-native-base/tags) on the repository. Omit it to always pull the latest from the default branch. The `--force` flag tells degit to overwrite the destination if it already exists, preventing deeply nested folders.
 
-This will:
+### What happens
 
-1. Clone the template (without git history) into `my-app/`
-2. Replace all template placeholders with your project name (`MyApp`)
-3. Optionally install npm dependencies (prompted interactively)
+1. [`degit`](https://github.com/Rich-Harris/degit) clones the template (without git history) into `my-app/`
+2. The `use.js` script replaces all template placeholders with your project name (`MyApp`)
+3. It then offers to install npm dependencies (Y/n prompt)
 
-After scaffolding, you can safely delete the scaffolding script:
+### Cleaning up
+
+After scaffolding, you can safely delete the scaffolding script and this README note:
 
 ```bash
 rm __scripts__/use.js
 ```
+
+> **Troubleshooting nested folders?** Run `rm -rf my-app` before re-running step 1, or always use `--force`.
 
 ---
 
