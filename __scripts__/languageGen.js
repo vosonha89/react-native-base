@@ -12,7 +12,6 @@
  * Usage:  node __script_/languageGen.js
  *         npm run language:gen
  */
-/* eslint-env node */
 const fs = require('fs');
 const path = require('path');
 

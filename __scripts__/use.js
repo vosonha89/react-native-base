@@ -10,7 +10,6 @@
  *   - Optionally installs npm dependencies.
  *   - Is safe to delete after first use.
  */
-/* eslint-env node */
 const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
