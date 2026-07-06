@@ -50,9 +50,10 @@ npx degit --force vosonha89/react-native-base#v0.0.1 my-app && cd my-app && node
 
 ## What happens
 
-1. The template is cloned (without git history) via `git clone --depth 1`
+1. The template is cloned via `git clone --depth 1` (carries the template `.git` folder)
 2. The `use.js` script replaces all template placeholders with your project name
-3. Scaffolding scripts are automatically cleaned up
+3. The template `.git` folder is removed so the new project starts with a clean history
+4. Scaffolding scripts are automatically cleaned up
 
 ---
 

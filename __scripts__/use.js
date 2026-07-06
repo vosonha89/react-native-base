@@ -109,6 +109,24 @@ function validateName(name) {
   }
 }
 
+/* ──────────────────────── git clean ──────────────────────── */
+
+/**
+ * Removes the template's `.git` folder (carried over by `git clone`) so
+ * the scaffolded project starts with no git history. The user is
+ * responsible for `git init` / `git remote add` themselves.
+ * No-op if no `.git` is present (e.g. the `degit` flow).
+ */
+function cleanGit() {
+  const gitPath = path.join(ROOT, '.git');
+  if (!fs.existsSync(gitPath)) {
+    log('✓  No .git folder found — skipped');
+    return;
+  }
+  fs.rmSync(gitPath, { recursive: true, force: true });
+  log('🧹  Removed template .git folder');
+}
+
 /* ──────────────────── patching ──────────────────── */
 
 function patchPackageJson(name) {
@@ -172,6 +190,9 @@ async function main() {
   // Patch files
   patchPackageJson(name);
   patchAppJson(name);
+
+  // Clean template .git folder
+  cleanGit();
 
   console.log('');
 
