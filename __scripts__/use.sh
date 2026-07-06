@@ -30,9 +30,11 @@ pascal_to_kebab() {
 # ──────────────────── argument parsing ────────────────────
 
 NAME=""
+NAMESPACE=""
 for arg in "$@"; do
   case "$arg" in
     --name=*) NAME="${arg#--name=}" ;;
+    --namespace=*) NAMESPACE="${arg#--namespace=}" ;;
     *) ;;
   esac
 done
@@ -72,7 +74,11 @@ main() {
 
   # Run the inner rename script — pipe "n" to skip the install prompt
   ok "Renaming project → $NAME"
-  (cd "$KEBAB" && node __scripts__/use.js --name="$NAME" <<< "n")
+  if [ -n "$NAMESPACE" ]; then
+    (cd "$KEBAB" && node __scripts__/use.js --name="$NAME" --namespace="$NAMESPACE" <<< "n")
+  else
+    (cd "$KEBAB" && node __scripts__/use.js --name="$NAME" <<< "n")
+  fi
 
   echo ""
 

@@ -18,7 +18,8 @@ irm https://raw.githubusercontent.com/vosonha89/react-native-base/main/__scripts
 #>
 [CmdletBinding()]
 param(
-  [string]$Name
+  [string]$Name,
+  [string]$Namespace
 )
 
 $ErrorActionPreference = 'Stop'
@@ -74,7 +75,11 @@ Write-Host ""
 Write-OK "Renaming project → $Name"
 Push-Location $kebab
 try {
-  "n" | node __scripts__/use.js --name="$Name"
+  $useArgs = @("__scripts__/use.js", "--name=`"$Name`"")
+  if ($Namespace) {
+    $useArgs += "--namespace=`"$Namespace`""
+  }
+  "n" | node @useArgs
   
   Write-Host ""
   Write-OK "Removing scaffolding scripts"
