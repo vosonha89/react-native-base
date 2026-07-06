@@ -1,3 +1,35 @@
+# 🚀 Use this template
+
+Scaffold a new project from this template using [`degit`](https://github.com/Rich-Harris/degit) (no git history, no extra package needed).
+
+### Latest template
+
+```bash
+npx degit vosonha89/react-native-base my-app && cd my-app && node __scripts__/use.js --name=MyApp
+```
+
+### Pinned to a specific version
+
+```bash
+npx degit vosonha89/react-native-base#v0.0.1 my-app && cd my-app && node __scripts__/use.js --name=MyApp
+```
+
+> **Note:** The `#v0.0.1` form requires a [tagged release](https://github.com/vosonha89/react-native-base/tags) on the repository. Omit it to always pull the latest from the default branch.
+
+This will:
+
+1. Clone the template (without git history) into `my-app/`
+2. Replace all template placeholders with your project name (`MyApp`)
+3. Optionally install npm dependencies (prompted interactively)
+
+After scaffolding, you can safely delete the scaffolding script:
+
+```bash
+rm __scripts__/use.js
+```
+
+---
+
 This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
 # Getting Started
