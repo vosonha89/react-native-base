@@ -1,52 +1,58 @@
 # 🚀 Use this template
 
-Scaffold a new project from this template using [`degit`](https://github.com/Rich-Harris/degit) (no git history, no extra package needed).
+Scaffold a new React Native project from this template. No manual renaming needed.
 
-> ⚠️ **Important:** Run these commands from an **empty parent directory** (e.g. `~/Projects/`), not from inside an existing project folder. Running degit inside an existing folder with the same name will create nested directories.
+---
 
-### Latest template
-
-```bash
-# 1. Clone the template into my-app/
-npx degit --force vosonha89/react-native-base my-app
-
-# 2. Enter the new project
-cd my-app
-
-# 3. Rename it to your project name (PascalCase)
-node __scripts__/use.js --name=MyApp
-```
-
-### Pinned to a specific version
+## macOS / Linux (bash)
 
 ```bash
-# 1. Clone a specific tagged release into my-app/
-npx degit --force vosonha89/react-native-base#v0.0.1 my-app
-
-# 2. Enter the new project
-cd my-app
-
-# 3. Rename it to your project name (PascalCase)
-node __scripts__/use.js --name=MyApp
+curl -fsSL https://raw.githubusercontent.com/vosonha89/react-native-base/main/__scripts__/use.sh | bash
 ```
 
-> **Note:** The `#v0.0.1` form requires a [tagged release](https://github.com/vosonha89/react-native-base/tags) on the repository. Omit it to always pull the latest from the default branch. The `--force` flag tells degit to overwrite the destination if it already exists, preventing deeply nested folders.
-
-### What happens
-
-1. [`degit`](https://github.com/Rich-Harris/degit) clones the template (without git history) into `my-app/`
-2. The `use.js` script replaces all template placeholders with your project name (`MyApp`)
-3. It then offers to install npm dependencies (Y/n prompt)
-
-### Cleaning up
-
-After scaffolding, you can safely delete the scaffolding script and this README note:
+The script will ask for your project name. Or pass it directly:
 
 ```bash
-rm __scripts__/use.js
+curl -fsSL https://raw.githubusercontent.com/vosonha89/react-native-base/main/__scripts__/use.sh | bash -s -- --name=MyApp
 ```
 
-> **Troubleshooting nested folders?** Run `rm -rf my-app` before re-running step 1, or always use `--force`.
+## Windows (PowerShell)
+
+```powershell
+# Interactive (prompts for name)
+irm https://raw.githubusercontent.com/vosonha89/react-native-base/main/__scripts__/use.ps1 | iex
+
+# Non-interactive
+irm https://raw.githubusercontent.com/vosonha89/react-native-base/main/__scripts__/use.ps1 -OutFile install.ps1; .\install.ps1 -Name MyApp
+```
+
+---
+
+## Alternative — manual with `degit`
+
+> Use this if you prefer to clone the template yourself and run the rename step separately.
+
+```bash
+# Latest template
+npx degit --force vosonha89/react-native-base my-app && cd my-app && node __scripts__/use.js --name=MyApp
+
+# Pinned to a specific version
+npx degit --force vosonha89/react-native-base#v0.0.1 my-app && cd my-app && node __scripts__/use.js --name=MyApp
+```
+
+> **Notes:**
+>
+> - The `#v0.0.1` form requires a [tagged release](https://github.com/vosonha89/react-native-base/tags) on the repository. Omit it to always pull the latest from the default branch.
+> - The `--force` flag prevents deeply nested folders if you re-run the command.
+> - Always run from an **empty parent directory** (e.g. `~/Projects/`), not from inside an existing project folder.
+
+---
+
+## What happens
+
+1. The template is cloned (without git history) via `git clone --depth 1`
+2. The `use.js` script replaces all template placeholders with your project name
+3. Scaffolding scripts are automatically cleaned up
 
 ---
 
