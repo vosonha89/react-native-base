@@ -1,17 +1,22 @@
 import { StyleSheet } from 'react-native';
 
 /**
- * Default value for themestyle
+ * Default values for application theming.
  */
 export class ThemeStyleValues {
+  /** Default font family used across the app. */
   public static readonly DefaultFont = 'Montserrat-VariableFont_wght';
+  /** Default text color. */
   public static readonly DefaultColor = '#170206';
+  /** Default font size for body text. */
   public static readonly DefaultTextSize = 16;
+  /** Default font weight for body text. */
   public static readonly DefaultTextWeight = 500;
 }
 
 /**
- * Default style for application
+ * Default style for application.
+ * @returns a StyleSheet object with default system styles.
  */
 export function ThemeStyle() {
   return StyleSheet.create({

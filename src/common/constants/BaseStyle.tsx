@@ -3,7 +3,7 @@ import { Colors } from './Colors';
 import { BorderRadius } from './BorderRadius';
 import { FontSizes, FontWeights } from './Fonts';
 
-export default StyleSheet.create({
+const BaseStyle = StyleSheet.create({
   fill: {
     flex: 1,
   },
@@ -127,3 +127,6 @@ export default StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+export { BaseStyle };
+export default BaseStyle;

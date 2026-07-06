@@ -6,10 +6,11 @@ import LanguageHook from '../../common/hook/LanguageHook';
 import { LanguageCode } from 'one-frontend-framework';
 
 /**
- * View
- * @returns
+ * Home screen view.
+ * Displays language switch buttons and the current language text.
+ * @returns the Home JSX element.
  */
-function Home(): React.JSX.Element {
+export function Home(): React.JSX.Element {
   const languageHook = LanguageHook();
   const elHook = HomeHook();
 

@@ -3,7 +3,12 @@ import { NavigationContainer } from '@react-navigation/native';
 import { AppRouterStack } from '../../../AppRouters';
 import Home from '../../views/home/Home';
 
-function NavigationContainerComponents(): React.JSX.Element {
+/**
+ * Navigation container component.
+ * Sets up the stack navigator with Home as the initial route.
+ * @returns the NavigationContainer JSX element.
+ */
+export function NavigationContainerComponents(): React.JSX.Element {
   return (
     <NavigationContainer>
       <AppRouterStack.Navigator

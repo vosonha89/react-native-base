@@ -9,4 +9,4 @@ export const BorderRadius = {
   br8: 8,
   br5: 5,
   br4: 4,
-};
+} as const;

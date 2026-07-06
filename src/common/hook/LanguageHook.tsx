@@ -6,13 +6,18 @@ import { LanguageService } from '../../services/logic/languageSerivce';
 import { appEventEmitter } from '../utils/appEventEmitter';
 
 /**
- * For global language hook
- * @returns
+ * Global language hook for reactive language switching.
+ * Provides current language text and a changeLanguage function.
+ * @returns the current language text, change function, and service instance.
  */
-function LanguageHook() {
+export function LanguageHook() {
   const languageService = container.resolve(LanguageService);
   const [text, setText] = useState(languageService.text as LanguageText);
 
+  /**
+   * Change the active language.
+   * @param language - language code to switch to.
+   */
   async function changeLanguage(language: string): Promise<void> {
     appEventEmitter.emit('languageChanged', language);
   }

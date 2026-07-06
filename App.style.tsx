@@ -2,7 +2,12 @@ import { StyleSheet, useColorScheme } from 'react-native';
 import { ThemeStyle } from './src/common/constants/ThemeStyle';
 import { Colors } from './src/common/constants/Colors';
 
-function AppStyle() {
+/**
+ * Application-level dynamic styles.
+ * Uses color scheme to toggle between light and dark backgrounds.
+ * @returns composed default style object.
+ */
+export function AppStyle() {
   const isDarkMode = useColorScheme() === 'dark';
 
   const extendStyle = StyleSheet.create({

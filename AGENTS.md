@@ -15,14 +15,15 @@ Rules for any AI coding agent (Cline, Cursor, Claude Code, Aider, etc.) working 
 
 Every class member (property, method) in a `.ts` / `.tsx` file MUST declare an explicit access modifier.
 
-| Element | Rule |
-|---|---|
-| Class property / method | `public` / `protected` / `private` |
-| Standalone function | `export function` |
-| Standalone type / interface | `export` always |
-| Config object literal | `export const Foo = { ... } as const` |
+| Element                     | Rule                                  |
+| --------------------------- | ------------------------------------- |
+| Class property / method     | `public` / `protected` / `private`    |
+| Standalone function         | `export function`                     |
+| Standalone type / interface | `export` always                       |
+| Config object literal       | `export const Foo = { ... } as const` |
 
 ❌ **Bad**
+
 ```ts
 function Home() { ... }
 const styles = { color: 'red' };
@@ -30,6 +31,7 @@ class Foo { bar = 1; }
 ```
 
 ✅ **Good**
+
 ```ts
 export function Home(): React.JSX.Element { ... }
 export const ThemeConfig = { dark: '#000' } as const;
@@ -47,6 +49,7 @@ export class Foo {
 Always use the full, exact exported name. No `as`, no renaming for brevity.
 
 ❌ **Bad**
+
 ```ts
 import Home from './Home';
 import { ComponentState as CS } from '../../common/types/componentState';
@@ -54,6 +57,7 @@ import * as Nav from '@react-navigation/native';
 ```
 
 ✅ **Good**
+
 ```ts
 import Home from './Home';
 import { ComponentState } from '../../common/types/componentState';
@@ -61,6 +65,7 @@ import * as Navigation from '@react-navigation/native';
 ```
 
 **Exceptions:**
+
 - `React` stays as `React` (universal convention)
 - Namespace imports keep the source's namespace name as-is
 
@@ -73,9 +78,10 @@ import * as Navigation from '@react-navigation/native';
 - **Summary**: always one line
 - **`@param` / `@returns`**: include when the parameter name + TypeScript type does not already convey the semantics
 - **Never use inline `@type {string}`** — TypeScript handles types
-- **No restating the obvious** — JSDoc is for *intent*, not signatures
+- **No restating the obvious** — JSDoc is for _intent_, not signatures
 
 ✅ **Good**
+
 ```ts
 /**
  * Authenticates user and caches the token.
@@ -89,6 +95,7 @@ private clearCache(): void { ... }
 ```
 
 ❌ **Bad**
+
 ```ts
 /**
  * This method is responsible for logging in the user. It takes a
@@ -102,28 +109,28 @@ private clearCache(): void { ... }
 
 ## 4. Other project conventions (locked-in)
 
-| Convention | Standard |
-|---|---|
-| View folder structure | `src/views/{name}/` → `{Name}.tsx`, `{Name}.hook.tsx`, `{Name}.state.ts`, `{Name}.style.tsx` |
-| Scaffolding | Use `npm run view:gen -- --name=Profile` (or `npm run view:gen` for interactive prompt) |
-| State lifecycle | `ComponentState.copy()` + `init()` |
-| Styling | `ThemeStyle.compose(themeStyle.defaultSystem, customStyle)` |
-| File / component names | PascalCase (`ProfileScreen`) |
-| Variables / functions | camelCase (`loadData`) |
-| Formatting | Run `npm run format:write` after generating or editing files |
-| Primary style reference | `src/views/home/Home.*` |
+| Convention              | Standard                                                                                     |
+| ----------------------- | -------------------------------------------------------------------------------------------- |
+| View folder structure   | `src/views/{name}/` → `{Name}.tsx`, `{Name}.hook.tsx`, `{Name}.state.ts`, `{Name}.style.tsx` |
+| Scaffolding             | Use `npm run view:gen -- --name=Profile` (or `npm run view:gen` for interactive prompt)      |
+| State lifecycle         | `ComponentState.copy()` + `init()`                                                           |
+| Styling                 | `ThemeStyle.compose(themeStyle.defaultSystem, customStyle)`                                  |
+| File / component names  | PascalCase (`ProfileScreen`)                                                                 |
+| Variables / functions   | camelCase (`loadData`)                                                                       |
+| Formatting              | Run `npm run format:write` after generating or editing files                                 |
+| Primary style reference | `src/views/home/Home.*`                                                                      |
 
 ---
 
 ## 5. Forbidden
 
-| ❌ | Reason | ✅ Alternative |
-|---|---|---|
-| `any` | Loses all type safety | `AnyType` from `one-frontend-framework` — `import { AnyType } from 'one-frontend-framework';`. Usage: `public handle(data: AnyType): void { ... }` |
-| `function`-keyword functions with implicit-`any` params | Types must be explicit | Always type parameters explicitly |
-| Default exports for utilities | Hurts tree-shaking and consistency | Use named exports; React components are the **only** allowed default-export |
-| Inline styles | Breaks theming consistency | Always go through `ThemeStyle` |
-| Modifying files outside the scope of the requested task | Unpredictable side effects | If a related file needs changes, ask first |
+| ❌                                                      | Reason                             | ✅ Alternative                                                                                                                                     |
+| ------------------------------------------------------- | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `any`                                                   | Loses all type safety              | `AnyType` from `one-frontend-framework` — `import { AnyType } from 'one-frontend-framework';`. Usage: `public handle(data: AnyType): void { ... }` |
+| `function`-keyword functions with implicit-`any` params | Types must be explicit             | Always type parameters explicitly                                                                                                                  |
+| Default exports for utilities                           | Hurts tree-shaking and consistency | Use named exports; React components are the **only** allowed default-export                                                                        |
+| Inline styles                                           | Breaks theming consistency         | Always go through `ThemeStyle`                                                                                                                     |
+| Modifying files outside the scope of the requested task | Unpredictable side effects         | If a related file needs changes, ask first                                                                                                         |
 
 ---
 

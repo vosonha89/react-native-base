@@ -1,1 +1,3 @@
-export type Listener = (...args: any[]) => void;
+import { AnyType } from 'one-frontend-framework';
+
+export type Listener = (...args: AnyType[]) => void;

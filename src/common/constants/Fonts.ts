@@ -9,7 +9,7 @@ export const FontSizes = {
   s14: 14,
   s12: 12,
   s10: 10,
-};
+} as const;
 
 export const LineHeights = {
   lh44: 44,
@@ -24,7 +24,7 @@ export const LineHeights = {
   lh14: 14,
   lh12: 12,
   lh10: 10,
-};
+} as const;
 
 export const FontWeights = {
   w100: '100',

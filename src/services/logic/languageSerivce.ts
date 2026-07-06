@@ -12,9 +12,14 @@ import {
 
 @singleton()
 export class LanguageService extends AbstractLanguageService<StorageService> {
+  /** Persistence layer for language preferences. */
   public storeService: StorageService = container.resolve(StorageService);
+  /** Current language text object, re-assigned on language switch. */
   public text: LanguageText = {} as LanguageText;
 
+  /**
+   * Initialises the language from stored preferences or defaults to VI.
+   */
   public async initLanguage(): Promise<void> {
     try {
       const stored = await this.storeService.getObject<string>(
@@ -35,8 +40,8 @@ export class LanguageService extends AbstractLanguageService<StorageService> {
   }
 
   /**
-   * Set language to store
-   * @param value
+   * Persists the chosen language code and updates in-memory text.
+   * @param value - target language code (EN/VI).
    */
   public async setLanguage(value: string): Promise<void> {
     const me = this;
@@ -64,8 +69,8 @@ export class LanguageService extends AbstractLanguageService<StorageService> {
   }
 
   /**
-   * Get language text from json
-   * @param value
+   * Loads the JSON language bundle for the given code into `this.text`.
+   * @param value - language code (EN/VI).
    */
   public getLanguageText(value: string): void {
     const me = this;

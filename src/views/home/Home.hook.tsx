@@ -4,15 +4,16 @@ import { HomeState } from './Home.state';
 // import { AppRouteParamList } from '../../../AppRouters';
 
 /**
- * Hook for view
- * @returns
+ * Hook for Home view.
+ * Initializes component state and triggers page load on mount.
+ * @returns component state object.
  */
-function HomeHook() {
+export function HomeHook() {
   const [componentState, setComponentState] = useState(new HomeState());
   // const navigation = useNavigation<NavigationProp<AppRouteParamList>>();
 
   /**
-   * Load page
+   * Load page state asynchronously.
    */
   async function loadPage(): Promise<void> {
     const pageState: HomeState = componentState.copy();

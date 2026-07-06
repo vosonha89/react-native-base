@@ -14,6 +14,6 @@ const extendStyle = StyleSheet.create({
  */
 const HomeStyle = {
   default: StyleSheet.compose(themeStyle.defaultSystem, extendStyle.default),
-};
+} as const;
 
 export default HomeStyle;
