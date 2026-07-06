@@ -1,9 +1,8 @@
 /**
  * use — Scaffold a new project from the react-native-base template.
  *
- * Usage:
- *   npx degit vosonha89/react-native-base my-app
- *   cd my-app && node __scripts__/use.js --name=MyApp
+ * Usage (single command):
+ *   npx degit --force vosonha89/react-native-base my-app && cd my-app && node __scripts__/use.js --name=MyApp
  *
  * This script:
  *   - Replaces placeholder project names (react-native-base / ReactNativeBase)
@@ -115,16 +114,17 @@ function validateName(name) {
 
 function patchPackageJson(name) {
   const pkgPath = path.join(ROOT, 'package.json');
-  const pkg = readJson(pkgPath);
+  if (!fs.existsSync(pkgPath)) {
+    bail('No package.json found. Are you in the template root directory?');
+  }
 
+  const pkg = readJson(pkgPath);
   const oldName = pkg.name;
   const newName = pascalToKebab(name);
 
-  if (oldName !== 'react-native-base') {
-    bail(
-      `package.json "name" is "${oldName}", expected "react-native-base". ` +
-        'This script should only run at the root of a freshly-cloned react-native-base template.',
-    );
+  if (oldName === newName) {
+    log(`✓  package.json name already "${newName}" — skipped`);
+    return;
   }
 
   pkg.name = newName;
@@ -134,18 +134,19 @@ function patchPackageJson(name) {
 
 function patchAppJson(name) {
   const appPath = path.join(ROOT, 'app.json');
+  if (!fs.existsSync(appPath)) {
+    bail('No app.json found. Are you in the template root directory?');
+  }
+
   const app = readJson(appPath);
+
+  if (app.name === name && app.displayName === name) {
+    log(`✓  app.json already "${name}" — skipped`);
+    return;
+  }
 
   const oldName = app.name;
   const oldDisplayName = app.displayName;
-
-  if (oldName !== 'ReactNativeBase' || oldDisplayName !== 'ReactNativeBase') {
-    bail(
-      `app.json expected both "name" and "displayName" to be "ReactNativeBase", ` +
-        `got "name": "${oldName}", "displayName": "${oldDisplayName}". ` +
-        'This script should only run at the root of a freshly-cloned react-native-base template.',
-    );
-  }
 
   app.name = name;
   app.displayName = name;
@@ -156,57 +157,10 @@ function patchAppJson(name) {
   );
 }
 
-/* ──────────────────── safety checks ──────────────────── */
-
-/**
- * Check if we're inside a nested directory of another npm project.
- * This catches the case where someone ran degit inside an existing
- * project folder, causing deeply nested directories.
- */
-function detectNestedProject() {
-  const parentPkg = path.resolve(ROOT, '..', 'package.json');
-  if (fs.existsSync(parentPkg)) {
-    const parent = readJson(parentPkg);
-    if (parent.name) {
-      console.error(
-        `  ⚠  Warning: you're inside "${parent.name}" (found ../package.json).\n` +
-          '     Did you run degit from inside an existing project folder?\n' +
-          '     Run "rm -rf ' +
-          path.basename(ROOT) +
-          '" and re-run from an empty parent directory.\n',
-      );
-      return new Promise(resolve => {
-        const rl = readline.createInterface({
-          input: process.stdin,
-          output: process.stdout,
-        });
-        rl.question('  Continue anyway? (y/N) ', answer => {
-          rl.close();
-          const trimmed = answer.trim().toLowerCase();
-          resolve(trimmed === 'y' || trimmed === 'yes');
-        });
-      });
-    }
-  }
-  return Promise.resolve(true);
-}
-
-/* ───────────────────────── main ───────────────────────── */
+/* ──────────────────────── main ──────────────────────── */
 
 async function main() {
   console.log(HEADER);
-
-  // Safety: confirm destination is a fresh template
-  const pkgPath = path.join(ROOT, 'package.json');
-  if (!fs.existsSync(pkgPath)) {
-    bail('No package.json found. Are you in the template root directory?');
-  }
-
-  const ok = await detectNestedProject();
-  if (!ok) {
-    log('Cancelled.');
-    process.exit(0);
-  }
 
   let { name } = parseArgs();
   if (!name) {
@@ -243,7 +197,7 @@ async function main() {
   log('');
   log('  📁  Source files are at  src/');
   log('  🔤  Language files are at  assets/language/');
-  log('  🧹  Delete this script when done:  rm __scripts__/use.js');
+  log('  🧹  Delete this script when done:  rm -rf __scripts__/use.js');
   log('');
 }
 
