@@ -6,7 +6,9 @@
  *
  * This script:
  *   - Replaces placeholder project names (react-native-base / ReactNativeBase)
- *     with the user's project name in package.json and app.json.
+ *     with the user's project name in package.json, app.json and .env.
+ *   - Prompts for an optional Android/iOS namespace (e.g. com.myapp).
+ *   - Writes the namespace to app.json as androidNamespace.
  *   - Optionally installs npm dependencies.
  *   - Is safe to delete after first use.
  */
@@ -73,17 +75,28 @@ function promptYesNo(question) {
 function parseArgs() {
   const args = process.argv.slice(2);
   let name = null;
+  let namespace = null;
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--name' && args[i + 1]) {
       name = args[i + 1];
-      break;
+      i++;
+      continue;
     }
     if (args[i].startsWith('--name=')) {
       name = args[i].slice('--name='.length);
-      break;
+      continue;
+    }
+    if (args[i] === '--namespace' && args[i + 1]) {
+      namespace = args[i + 1];
+      i++;
+      continue;
+    }
+    if (args[i].startsWith('--namespace=')) {
+      namespace = args[i].slice('--namespace='.length);
+      continue;
     }
   }
-  return { name };
+  return { name, namespace };
 }
 
 function promptName() {
@@ -107,6 +120,48 @@ function validateName(name) {
       `Invalid name "${name}". Must be PascalCase, e.g. MyApp, AwesomeProject`,
     );
   }
+}
+
+/* ──────────────────── namespace ──────────────────── */
+
+/**
+ * Returns the default Android/iOS namespace for a given PascalCase name.
+ *   "MyApp" → "com.myapp"
+ *   "MyAwesomeApp" → "com.myawesomeapp"
+ */
+function defaultNamespace(name) {
+  return 'com.' + pascalToKebab(name).replace(/-/g, '');
+}
+
+/**
+ * Reverse-DNS pattern: at least two segments, each starting with a lowercase
+ * letter, followed by lowercase letters / digits / underscores.
+ */
+const NAMESPACE_RE = /^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/;
+
+function validateNamespace(ns) {
+  if (!ns) return;
+  if (!NAMESPACE_RE.test(ns)) {
+    bail(
+      `Invalid namespace "${ns}". Must be reverse-DNS, e.g. com.myapp or com.acme.myapp`,
+    );
+  }
+}
+
+function promptNamespace() {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+  return new Promise(resolve => {
+    rl.question(
+      '  Android/iOS namespace (press Enter for default: com.<name>): ',
+      answer => {
+        rl.close();
+        resolve(answer.trim());
+      },
+    );
+  });
 }
 
 /* ──────────────────────── git clean ──────────────────────── */
@@ -149,29 +204,58 @@ function patchPackageJson(name) {
   log(`✓  Updated  package.json  name: "${oldName}" → "${newName}"`);
 }
 
-function patchAppJson(name) {
+function patchAppJson(name, namespace) {
   const appPath = path.join(ROOT, 'app.json');
   if (!fs.existsSync(appPath)) {
     bail('No app.json found. Are you in the template root directory?');
   }
 
   const app = readJson(appPath);
+  const oldName = app.name;
 
-  if (app.name === name && app.displayName === name) {
-    log(`✓  app.json already "${name}" — skipped`);
-    return;
+  if (app.name !== name) {
+    app.name = name;
+  }
+  if (app.displayName !== name) {
+    app.displayName = name;
+  }
+  if (app.androidNamespace !== namespace) {
+    app.androidNamespace = namespace;
   }
 
-  const oldName = app.name;
-  const oldDisplayName = app.displayName;
-
-  app.name = name;
-  app.displayName = name;
   writeJson(appPath, app);
-  log(
-    `✓  Updated  app.json  name: "${oldName}" → "${name}", ` +
-      `displayName: "${oldDisplayName}" → "${name}"`,
-  );
+  log(`✓  Updated  app.json  name: "${oldName}" → "${name}"`);
+  log(`✓  Updated  app.json  androidNamespace: "${namespace}"`);
+}
+
+/**
+ * Patches .env so that APP_TITLE matches the new project name.
+ * Adds the field if it does not exist yet.
+ */
+function patchEnv(name) {
+  const envPath = path.join(ROOT, '.env');
+  let content;
+  let changed = false;
+
+  if (fs.existsSync(envPath)) {
+    content = fs.readFileSync(envPath, 'utf-8');
+  } else {
+    content = '';
+  }
+
+  const lineRe = /^(APP_TITLE=).*/;
+  if (lineRe.test(content)) {
+    content = content.replace(lineRe, `$1"${name}"`);
+    changed = true;
+  } else {
+    content += `\nAPP_TITLE="${name}"\n`;
+    changed = true;
+  }
+
+  if (changed) {
+    fs.writeFileSync(envPath, content, 'utf-8');
+    log(`✓  Updated  .env  APP_TITLE → "${name}"`);
+  }
 }
 
 /* ──────────────────────── main ──────────────────────── */
@@ -179,17 +263,27 @@ function patchAppJson(name) {
 async function main() {
   console.log(HEADER);
 
-  let { name } = parseArgs();
+  let { name, namespace } = parseArgs();
+
+  // ── Name ──
   if (!name) {
     name = await promptName();
   }
   validateName(name);
 
+  // ── Namespace ──
+  if (!namespace) {
+    const input = await promptNamespace();
+    namespace = input || defaultNamespace(name);
+  }
+  validateNamespace(namespace);
+
   console.log('');
 
   // Patch files
   patchPackageJson(name);
-  patchAppJson(name);
+  patchAppJson(name, namespace);
+  patchEnv(name);
 
   // Clean template .git folder
   cleanGit();
@@ -213,7 +307,7 @@ async function main() {
   log('  Next steps:');
   log('    cd ' + path.basename(ROOT));
   log('    npx react-native eject   # regenerate native platform folders');
-  log('    npm run android          # or: npm run ios');
+  log('    npm run start:android    # or: npm run start:ios');
   log('');
   log('  📁  Source files are at  src/');
   log('  🔤  Language files are at  assets/language/');

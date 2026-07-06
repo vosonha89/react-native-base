@@ -30,9 +30,11 @@ pascal_to_kebab() {
 # ──────────────────── argument parsing ────────────────────
 
 NAME=""
+NAMESPACE=""
 for arg in "$@"; do
   case "$arg" in
     --name=*) NAME="${arg#--name=}" ;;
+    --namespace=*) NAMESPACE="${arg#--namespace=}" ;;
     *) ;;
   esac
 done
@@ -72,7 +74,11 @@ main() {
 
   # Run the inner rename script — pipe "n" to skip the install prompt
   ok "Renaming project → $NAME"
-  (cd "$KEBAB" && node __scripts__/use.js --name="$NAME" <<< "n")
+  if [ -n "$NAMESPACE" ]; then
+    (cd "$KEBAB" && node __scripts__/use.js --name="$NAME" --namespace="$NAMESPACE" <<< "n")
+  else
+    (cd "$KEBAB" && node __scripts__/use.js --name="$NAME" <<< "n")
+  fi
 
   echo ""
 
@@ -87,7 +93,7 @@ main() {
   echo "      cd $KEBAB"
   echo "      npm install"
   echo "      npx react-native eject"
-  echo "      npm run android          # or: npm run ios"
+  echo "      npm run start:android    # or: npm run start:ios"
   echo ""
   echo "    📁  Source files are at  src/"
   echo "    🔤  Language files are at  assets/language/"

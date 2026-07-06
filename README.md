@@ -13,7 +13,11 @@ curl -fsSL https://raw.githubusercontent.com/vosonha89/react-native-base/main/__
 The script will ask for your project name. Or pass it directly:
 
 ```bash
+# With project name only (namespace defaults to com.<name>)
 curl -fsSL https://raw.githubusercontent.com/vosonha89/react-native-base/main/__scripts__/use.sh | bash -s -- --name=MyApp
+
+# With custom namespace
+curl -fsSL https://raw.githubusercontent.com/vosonha89/react-native-base/main/__scripts__/use.sh | bash -s -- --name=MyApp --namespace=com.acme.myapp
 ```
 
 ## Windows (PowerShell)
@@ -22,8 +26,8 @@ curl -fsSL https://raw.githubusercontent.com/vosonha89/react-native-base/main/__
 # Interactive (prompts for name)
 irm https://raw.githubusercontent.com/vosonha89/react-native-base/main/__scripts__/use.ps1 | iex
 
-# Non-interactive
-irm https://raw.githubusercontent.com/vosonha89/react-native-base/main/__scripts__/use.ps1 -OutFile install.ps1; .\install.ps1 -Name MyApp
+# Non-interactive (with optional namespace)
+irm https://raw.githubusercontent.com/vosonha89/react-native-base/main/__scripts__/use.ps1 -OutFile install.ps1; .\install.ps1 -Name MyApp -Namespace com.acme.myapp
 ```
 
 ---
@@ -33,8 +37,8 @@ irm https://raw.githubusercontent.com/vosonha89/react-native-base/main/__scripts
 > Use this if you prefer to clone the template yourself and run the rename step separately.
 
 ```bash
-# Latest template
-npx degit --force vosonha89/react-native-base my-app && cd my-app && node __scripts__/use.js --name=MyApp
+# Latest template (with custom namespace)
+npx degit --force vosonha89/react-native-base my-app && cd my-app && node __scripts__/use.js --name=MyApp --namespace=com.acme.myapp
 
 # Pinned to a specific version
 npx degit --force vosonha89/react-native-base#v0.0.1 my-app && cd my-app && node __scripts__/use.js --name=MyApp
@@ -45,15 +49,18 @@ npx degit --force vosonha89/react-native-base#v0.0.1 my-app && cd my-app && node
 > - The `#v0.0.1` form requires a [tagged release](https://github.com/vosonha89/react-native-base/tags) on the repository. Omit it to always pull the latest from the default branch.
 > - The `--force` flag prevents deeply nested folders if you re-run the command.
 > - Always run from an **empty parent directory** (e.g. `~/Projects/`), not from inside an existing project folder.
+> - If `--namespace` is omitted, the script will prompt you interactively; pressing Enter accepts the default (`com.<lowercase-name>`).
 
 ---
 
 ## What happens
 
 1. The template is cloned via `git clone --depth 1` (carries the template `.git` folder)
-2. The `use.js` script replaces all template placeholders with your project name
-3. The template `.git` folder is removed so the new project starts with a clean history
-4. Scaffolding scripts are automatically cleaned up
+2. The `use.js` script prompts for your project name and optionally for an Android/iOS namespace
+3. Placeholders are replaced in `package.json`, `app.json`, and `.env`
+4. The namespace (e.g. `com.myapp`) is written to `app.json` as `androidNamespace`
+5. The template `.git` folder is removed so the new project starts with a clean history
+6. Scaffolding scripts are automatically cleaned up
 
 ---
 
