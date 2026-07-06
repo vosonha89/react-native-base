@@ -17,7 +17,7 @@ const path = require('path');
 const readline = require('readline');
 
 /* ──────────────────────── helpers ──────────────────────── */
-
+  
 const ROOT = path.resolve(__dirname, '..');
 
 const HEADER = `
@@ -76,6 +76,7 @@ function parseArgs() {
   const args = process.argv.slice(2);
   let name = null;
   let namespace = null;
+  let noInstall = false;
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--name' && args[i + 1]) {
       name = args[i + 1];
@@ -95,8 +96,11 @@ function parseArgs() {
       namespace = args[i].slice('--namespace='.length);
       continue;
     }
+    if (args[i] === '--no-install') {
+      noInstall = true;
+    }
   }
-  return { name, namespace };
+  return { name, namespace, noInstall };
 }
 
 function promptName() {
@@ -263,7 +267,7 @@ function patchEnv(name) {
 async function main() {
   console.log(HEADER);
 
-  let { name, namespace } = parseArgs();
+  let { name, namespace, noInstall } = parseArgs();
 
   // ── Name ──
   if (!name) {
@@ -291,7 +295,8 @@ async function main() {
   console.log('');
 
   // Optionally install dependencies
-  const shouldInstall = await promptYesNo('Install npm dependencies now?');
+  const shouldInstall =
+    noInstall === false ? await promptYesNo('Install npm dependencies now?') : false;
   if (shouldInstall) {
     log('Installing dependencies...');
     const { execSync } = require('child_process');

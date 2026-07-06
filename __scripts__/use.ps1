@@ -58,6 +58,20 @@ if ($Name -notmatch '^[A-Z][a-zA-Z0-9]*$') {
 }
 
 $kebab = ConvertTo-Kebab $Name
+$defaultNs = "com." + $kebab.Replace("-", "")
+
+# Interactive prompt if no namespace provided
+if ([string]::IsNullOrWhiteSpace($Namespace)) {
+  $Namespace = Read-Host "  Android/iOS namespace (press Enter for default: $defaultNs)"
+  if ([string]::IsNullOrWhiteSpace($Namespace)) {
+    $Namespace = $defaultNs
+  }
+}
+
+# Validate namespace format
+if ($Namespace -and ($Namespace -notmatch '^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$')) {
+  Write-Err "Invalid namespace '$Namespace'. Must be reverse-DNS, e.g. com.myapp or com.acme.myapp."
+}
 
 Write-Host ""
 
@@ -71,15 +85,11 @@ git clone --depth 1 "https://github.com/vosonha89/react-native-base.git" $kebab
 
 Write-Host ""
 
-# Run the inner rename script — pipe "n" to skip the install prompt
+# Run the inner rename script with --no-install so it never reads from stdin
 Write-OK "Renaming project → $Name"
 Push-Location $kebab
 try {
-  $useArgs = @("__scripts__/use.js", "--name=`"$Name`"")
-  if ($Namespace) {
-    $useArgs += "--namespace=`"$Namespace`""
-  }
-  "n" | node @useArgs
+  & "node" @("__scripts__/use.js", "--name=`"$Name`"", "--namespace=`"$Namespace`"", "--no-install")
   
   Write-Host ""
   Write-OK "Removing scaffolding scripts"
