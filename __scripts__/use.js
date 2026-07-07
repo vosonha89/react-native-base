@@ -2,13 +2,21 @@
  * use — Scaffold a new project from the react-native-base template.
  *
  * Usage (single command):
- *   npx degit --force vosonha89/react-native-base my-app && cd my-app && node __scripts__/use.js --name=MyApp
+ *   npx degit --force vosonha89/react-native-base my-app && cd my-app && node __scripts__/use.js --name=masonvn.pricescout --displayName='Price Scout'
+ *
+ * The `--name` argument accepts:
+ *   - PascalCase:  MyApp
+ *   - kebab-case:  my-app
+ *   - reverse-DNS: masonvn.pricescout  (recommended)
+ *
+ * The `--displayName` argument is optional. If omitted you will be prompted.
  *
  * This script:
  *   - Replaces placeholder project names (react-native-base / ReactNativeBase)
- *     with the user's project name in package.json, app.json and .env.
- *   - Prompts for an optional Android/iOS namespace (e.g. com.myapp).
- *   - Writes the namespace to app.json as androidNamespace.
+ *     with the user's project details in package.json, app.json and .env.
+ *   - Derives the Android/iOS namespace as `com.<name>` (e.g. com.masonvn.pricescout).
+ *   - Prompts for a custom namespace override.
+ *   - Prompts for a display name (the user-facing app name shown in the launcher).
  *   - Optionally installs npm dependencies.
  *   - Is safe to delete after first use.
  */
@@ -38,6 +46,7 @@ function log(msg) {
  * PascalCase → kebab-case.
  *   "ReactNativeBase" → "react-native-base"
  *   "MyApp"           → "my-app"
+ *   No-op for lower-case / reverse-DNS input.
  */
 function pascalToKebab(name) {
   return name
@@ -75,6 +84,7 @@ function promptYesNo(question) {
 function parseArgs() {
   const args = process.argv.slice(2);
   let name = null;
+  let displayName = null;
   let namespace = null;
   let noInstall = false;
   for (let i = 0; i < args.length; i++) {
@@ -85,6 +95,15 @@ function parseArgs() {
     }
     if (args[i].startsWith('--name=')) {
       name = args[i].slice('--name='.length);
+      continue;
+    }
+    if (args[i] === '--displayName' && args[i + 1]) {
+      displayName = args[i + 1];
+      i++;
+      continue;
+    }
+    if (args[i].startsWith('--displayName=')) {
+      displayName = args[i].slice('--displayName='.length);
       continue;
     }
     if (args[i] === '--namespace' && args[i + 1]) {
@@ -100,7 +119,7 @@ function parseArgs() {
       noInstall = true;
     }
   }
-  return { name, namespace, noInstall };
+  return { name, displayName, namespace, noInstall };
 }
 
 function promptName() {
@@ -109,19 +128,25 @@ function promptName() {
     output: process.stdout,
   });
   return new Promise(resolve => {
-    rl.question('  Project name (PascalCase, e.g. MyApp): ', answer => {
+    rl.question('  Project name (e.g. masonvn.pricescout or MyApp): ', answer => {
       rl.close();
       resolve(answer.trim());
     });
   });
 }
 
+/**
+ * Accepts PascalCase, kebab-case, and reverse-DNS names.
+ *   MyApp, my-app, masonvn.pricescout, com.myapp, etc.
+ */
+const NAME_RE = /^[a-zA-Z][a-zA-Z0-9]*([._-][a-zA-Z0-9]+)*$/;
+
 function validateName(name) {
   if (!name)
-    bail('Name is required. Use --name=MyApp or enter it interactively.');
-  if (!/^[A-Z][a-zA-Z0-9]*$/.test(name)) {
+    bail('Name is required. Use --name=masonvn.pricescout or enter it interactively.');
+  if (!NAME_RE.test(name)) {
     bail(
-      `Invalid name "${name}". Must be PascalCase, e.g. MyApp, AwesomeProject`,
+      `Invalid name "${name}". Must be PascalCase (MyApp), kebab (my-app), or reverse-DNS (masonvn.pricescout).`,
     );
   }
 }
@@ -129,12 +154,15 @@ function validateName(name) {
 /* ──────────────────── namespace ──────────────────── */
 
 /**
- * Returns the default Android/iOS namespace for a given PascalCase name.
- *   "MyApp" → "com.myapp"
- *   "MyAwesomeApp" → "com.myawesomeapp"
+ * Returns the default Android/iOS namespace for a given name.
+ *   "masonvn.pricescout" → "com.masonvn.pricescout"
+ *   "MyApp"              → "com.myapp"
+ *   "my-app"             → "com.my-app"
+ *   "com.myapp"          → "com.myapp"  (no double-prefix)
  */
 function defaultNamespace(name) {
-  return 'com.' + pascalToKebab(name).replace(/-/g, '');
+  const lower = name.toLowerCase();
+  return lower.startsWith('com.') ? lower : 'com.' + lower;
 }
 
 /**
@@ -163,6 +191,62 @@ function promptNamespace() {
       answer => {
         rl.close();
         resolve(answer.trim());
+      },
+    );
+  });
+}
+
+/* ──────────────────── display name ──────────────────── */
+
+/**
+ * Derives a JS-safe module name (PascalCase, no dots/dashes).
+ *   "masonvn.pricescout" → "MasonvnPricescout"
+ *   "my-app"             → "MyApp"
+ *   "MyApp"              → "MyApp"
+ */
+function deriveModuleName(name) {
+  return name
+    .split(/[._-]/)
+    .map(s => s.charAt(0).toUpperCase() + s.slice(1))
+    .join('');
+}
+
+/**
+ * Humanises a name for use as a default display name.
+ *   "MyApp"              → "MyApp"
+ *   "masonvn.pricescout" → "Masonvn Pricescout"
+ *   "my-app"             → "My App"
+ */
+function defaultDisplayName(name) {
+  if (/^[A-Z][a-zA-Z0-9]*$/.test(name)) {
+    return name; // already PascalCase — use as-is
+  }
+  return name
+    .split(/[._-]/)
+    .map(s => s.charAt(0).toUpperCase() + s.slice(1))
+    .join(' ');
+}
+
+function validateDisplayName(displayName) {
+  if (!displayName) {
+    bail('Display name is required.');
+  }
+  if (displayName.length > 100) {
+    bail('Display name must be 100 characters or fewer.');
+  }
+}
+
+function promptDisplayName(defaultDn) {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+  return new Promise(resolve => {
+    rl.question(
+      `  Display name (press Enter for default: ${defaultDn}): `,
+      answer => {
+        rl.close();
+        resolve(answer.trim() || defaultDn);
       },
     );
   });
@@ -208,7 +292,7 @@ function patchPackageJson(name) {
   log(`✓  Updated  package.json  name: "${oldName}" → "${newName}"`);
 }
 
-function patchAppJson(name, namespace) {
+function patchAppJson(name, displayName, namespace) {
   const appPath = path.join(ROOT, 'app.json');
   if (!fs.existsSync(appPath)) {
     bail('No app.json found. Are you in the template root directory?');
@@ -216,27 +300,29 @@ function patchAppJson(name, namespace) {
 
   const app = readJson(appPath);
   const oldName = app.name;
+  const moduleName = deriveModuleName(name);
 
-  if (app.name !== name) {
-    app.name = name;
+  if (app.name !== moduleName) {
+    app.name = moduleName;
   }
-  if (app.displayName !== name) {
-    app.displayName = name;
+  if (app.displayName !== displayName) {
+    app.displayName = displayName;
   }
   if (app.androidNamespace !== namespace) {
     app.androidNamespace = namespace;
   }
 
   writeJson(appPath, app);
-  log(`✓  Updated  app.json  name: "${oldName}" → "${name}"`);
+  log(`✓  Updated  app.json  name: "${oldName}" → "${moduleName}"`);
+  log(`✓  Updated  app.json  displayName: "${displayName}"`);
   log(`✓  Updated  app.json  androidNamespace: "${namespace}"`);
 }
 
 /**
- * Patches .env so that APP_TITLE matches the new project name.
+ * Patches .env so that APP_TITLE matches the display name.
  * Adds the field if it does not exist yet.
  */
-function patchEnv(name) {
+function patchEnv(displayName) {
   const envPath = path.join(ROOT, '.env');
   let content;
   let changed = false;
@@ -249,16 +335,16 @@ function patchEnv(name) {
 
   const lineRe = /^(APP_TITLE=).*/;
   if (lineRe.test(content)) {
-    content = content.replace(lineRe, `$1"${name}"`);
+    content = content.replace(lineRe, `$1"${displayName}"`);
     changed = true;
   } else {
-    content += `\nAPP_TITLE="${name}"\n`;
+    content += `\nAPP_TITLE="${displayName}"\n`;
     changed = true;
   }
 
   if (changed) {
     fs.writeFileSync(envPath, content, 'utf-8');
-    log(`✓  Updated  .env  APP_TITLE → "${name}"`);
+    log(`✓  Updated  .env  APP_TITLE → "${displayName}"`);
   }
 }
 
@@ -267,7 +353,7 @@ function patchEnv(name) {
 async function main() {
   console.log(HEADER);
 
-  let { name, namespace, noInstall } = parseArgs();
+  let { name, displayName, namespace, noInstall } = parseArgs();
 
   // ── Name ──
   if (!name) {
@@ -275,10 +361,18 @@ async function main() {
   }
   validateName(name);
 
+  // ── Display name ──
+  const derivedDn = defaultDisplayName(name);
+  if (!displayName) {
+    displayName = await promptDisplayName(derivedDn);
+  }
+  validateDisplayName(displayName);
+
   // ── Namespace ──
   if (!namespace) {
+    const defaultNs = defaultNamespace(name);
     const input = await promptNamespace();
-    namespace = input || defaultNamespace(name);
+    namespace = input || defaultNs;
   }
   validateNamespace(namespace);
 
@@ -286,8 +380,8 @@ async function main() {
 
   // Patch files
   patchPackageJson(name);
-  patchAppJson(name, namespace);
-  patchEnv(name);
+  patchAppJson(name, displayName, namespace);
+  patchEnv(displayName);
 
   // Clean template .git folder
   cleanGit();
@@ -307,7 +401,7 @@ async function main() {
   }
 
   console.log('');
-  log(`✨  Project "${name}" is ready!`);
+  log(`✨  Project "${displayName}" is ready!`);
   log('');
   log('  Next steps:');
   log('    cd ' + path.basename(ROOT));

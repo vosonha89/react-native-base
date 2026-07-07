@@ -6,7 +6,13 @@ Scaffold a new project from the react-native-base template.
 Clones the template, renames it to your project name, and cleans up.
 
 .PARAMETER Name
-Optional PascalCase project name (e.g., MyApp). If omitted, you'll be prompted.
+Optional project name (e.g. masonvn.pricescout or MyApp). If omitted, you'll be prompted.
+
+.PARAMETER DisplayName
+Optional user-facing app name. If omitted, you'll be prompted.
+
+.PARAMETER Namespace
+Optional Android/iOS namespace. If omitted, you'll be prompted.
 
 .EXAMPLE
 # Interactive (prompts for name):
@@ -14,11 +20,12 @@ irm https://raw.githubusercontent.com/vosonha89/react-native-base/main/__scripts
 
 .EXAMPLE
 # Non-interactive:
-irm https://raw.githubusercontent.com/vosonha89/react-native-base/main/__scripts__/use.ps1 -OutFile install.ps1; .\install.ps1 -Name MyApp
+irm https://raw.githubusercontent.com/vosonha89/react-native-base/main/__scripts__/use.ps1 -OutFile install.ps1; .\install.ps1 -Name "masonvn.pricescout" -DisplayName "Price Scout"
 #>
 [CmdletBinding()]
 param(
   [string]$Name,
+  [string]$DisplayName,
   [string]$Namespace
 )
 
@@ -40,25 +47,44 @@ function ConvertTo-Kebab([string]$s) {
   return $s.ToLower()
 }
 
+# Derive a humanised default display name
+function Get-DefaultDisplayName([string]$s) {
+  if ($s -match '^[A-Z][a-zA-Z0-9]*$') {
+    return $s # already PascalCase — use as-is
+  }
+  $parts = $s -split '[._-]'
+  return ($parts | ForEach-Object { $_.Substring(0,1).ToUpper() + $_.Substring(1) }) -join ' '
+}
+
 # ──────────────────────── main ────────────────────────
 
 Write-Header
 
 # Interactive prompt if no name provided
 if ([string]::IsNullOrWhiteSpace($Name)) {
-  $Name = Read-Host "  Project name (PascalCase, e.g. MyApp)"
+  $Name = Read-Host "  Project name (e.g. masonvn.pricescout or MyApp)"
 }
 
 # Validate
 if ([string]::IsNullOrWhiteSpace($Name)) {
-  Write-Err "Name is required. Use -Name MyApp or enter it interactively."
+  Write-Err "Name is required. Use -Name masonvn.pricescout or enter it interactively."
 }
-if ($Name -notmatch '^[A-Z][a-zA-Z0-9]*$') {
-  Write-Err "Invalid name '$Name'. Must be PascalCase, e.g. MyApp, AwesomeProject."
+if ($Name -notmatch '^[a-zA-Z][a-zA-Z0-9]*([._-][a-zA-Z0-9]+)*$') {
+  Write-Err "Invalid name '$Name'. Must be PascalCase (MyApp), kebab (my-app), or reverse-DNS (masonvn.pricescout)."
 }
 
 $kebab = ConvertTo-Kebab $Name
-$defaultNs = "com." + $kebab.Replace("-", "")
+$projectDir = $kebab.Replace('.', '-')
+$defaultNs = "com." + $Name.ToLower()
+$defaultDn = Get-DefaultDisplayName $Name
+
+# Interactive prompt for display name
+if ([string]::IsNullOrWhiteSpace($DisplayName)) {
+  $DisplayName = Read-Host "  Display name (press Enter for default: $defaultDn)"
+  if ([string]::IsNullOrWhiteSpace($DisplayName)) {
+    $DisplayName = $defaultDn
+  }
+}
 
 # Interactive prompt if no namespace provided
 if ([string]::IsNullOrWhiteSpace($Namespace)) {
@@ -76,20 +102,20 @@ if ($Namespace -and ($Namespace -notmatch '^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$
 Write-Host ""
 
 # Clone template
-if (Test-Path $kebab) {
-  Write-Err "Directory '$kebab' already exists. Remove it first or choose a different name."
+if (Test-Path $projectDir) {
+  Write-Err "Directory '$projectDir' already exists. Remove it first or choose a different name."
 }
 
-Write-OK "Cloning template → ./$kebab/"
-git clone --depth 1 "https://github.com/vosonha89/react-native-base.git" $kebab
+Write-OK "Cloning template → ./$projectDir/"
+git clone --depth 1 "https://github.com/vosonha89/react-native-base.git" $projectDir
 
 Write-Host ""
 
 # Run the inner rename script with --no-install so it never reads from stdin
-Write-OK "Renaming project → $Name"
-Push-Location $kebab
+Write-OK "Renaming project → $DisplayName"
+Push-Location $projectDir
 try {
-  & "node" @("__scripts__/use.js", "--name=`"$Name`"", "--namespace=`"$Namespace`"", "--no-install")
+  & "node" @("__scripts__/use.js", "--name=`"$Name`"", "--displayName=`"$DisplayName`"", "--namespace=`"$Namespace`"", "--no-install")
   
   Write-Host ""
   Write-OK "Removing scaffolding scripts"
@@ -99,9 +125,9 @@ finally {
   Pop-Location
 }
 
-Write-Host "`n  ✨  Project '$Name' is ready!`n" -ForegroundColor Green
+Write-Host "`n  ✨  Project '$DisplayName' is ready!`n" -ForegroundColor Green
 Write-Host "    Next steps:"
-Write-Host "      cd $kebab"
+Write-Host "      cd $projectDir"
 Write-Host "      npm install"
 Write-Host "      npx react-native eject"
 Write-Host "      npm run start:android    # or: npm run start:ios"
