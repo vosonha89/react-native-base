@@ -2,19 +2,19 @@
  * use — Scaffold a new project from the react-native-base template.
  *
  * Usage (single command):
- *   npx degit --force vosonha89/react-native-base my-app && cd my-app && node __scripts__/use.js --name=masonvn.pricescout --displayName='Price Scout'
+ *   npx degit --force vosonha89/react-native-base my-app && cd my-app && node __scripts__/use.js --name=reactnative.myapp --displayName='My App'
  *
  * The `--name` argument accepts:
  *   - PascalCase:  MyApp
  *   - kebab-case:  my-app
- *   - reverse-DNS: masonvn.pricescout  (recommended)
+ *   - reverse-DNS: reactnative.myapp  (recommended)
  *
  * The `--displayName` argument is optional. If omitted you will be prompted.
  *
  * This script:
  *   - Replaces placeholder project names (react-native-base / ReactNativeBase)
  *     with the user's project details in package.json, app.json and .env.
- *   - Derives the Android/iOS namespace as `com.<name>` (e.g. com.masonvn.pricescout).
+ *   - Derives the Android/iOS namespace as `com.<name>` (e.g. com.reactnative.myapp).
  *   - Prompts for a custom namespace override.
  *   - Prompts for a display name (the user-facing app name shown in the launcher).
  *   - Optionally installs npm dependencies.
@@ -128,7 +128,7 @@ function promptName() {
     output: process.stdout,
   });
   return new Promise(resolve => {
-    rl.question('  Project name (e.g. masonvn.pricescout or MyApp): ', answer => {
+    rl.question('  Project name (e.g. reactnative.myapp or MyApp): ', answer => {
       rl.close();
       resolve(answer.trim());
     });
@@ -137,16 +137,16 @@ function promptName() {
 
 /**
  * Accepts PascalCase, kebab-case, and reverse-DNS names.
- *   MyApp, my-app, masonvn.pricescout, com.myapp, etc.
+ *   MyApp, my-app, reactnative.myapp, com.myapp, etc.
  */
 const NAME_RE = /^[a-zA-Z][a-zA-Z0-9]*([._-][a-zA-Z0-9]+)*$/;
 
 function validateName(name) {
   if (!name)
-    bail('Name is required. Use --name=masonvn.pricescout or enter it interactively.');
+    bail('Name is required. Use --name=reactnative.myapp or enter it interactively.');
   if (!NAME_RE.test(name)) {
     bail(
-      `Invalid name "${name}". Must be PascalCase (MyApp), kebab (my-app), or reverse-DNS (masonvn.pricescout).`,
+      `Invalid name "${name}". Must be PascalCase (MyApp), kebab (my-app), or reverse-DNS (reactnative.myapp).`,
     );
   }
 }
@@ -155,7 +155,7 @@ function validateName(name) {
 
 /**
  * Returns the default Android/iOS namespace for a given name.
- *   "masonvn.pricescout" → "com.masonvn.pricescout"
+ *   "reactnative.myapp" → "com.reactnative.myapp"
  *   "MyApp"              → "com.myapp"
  *   "my-app"             → "com.my-app"
  *   "com.myapp"          → "com.myapp"  (no double-prefix)
@@ -200,7 +200,7 @@ function promptNamespace() {
 
 /**
  * Derives a JS-safe module name (PascalCase, no dots/dashes).
- *   "masonvn.pricescout" → "MasonvnPricescout"
+   *   "reactnative.myapp" → "ReactnativeMyapp"
  *   "my-app"             → "MyApp"
  *   "MyApp"              → "MyApp"
  */
@@ -214,7 +214,7 @@ function deriveModuleName(name) {
 /**
  * Humanises a name for use as a default display name.
  *   "MyApp"              → "MyApp"
- *   "masonvn.pricescout" → "Masonvn Pricescout"
+   *   "reactnative.myapp" → "Reactnative Myapp"
  *   "my-app"             → "My App"
  */
 function defaultDisplayName(name) {

@@ -4,7 +4,7 @@
 #
 # Usage:
 #   curl -fsSL https://raw.githubusercontent.com/vosonha89/react-native-base/main/__scripts__/use.sh | bash
-#   curl -fsSL https://raw.githubusercontent.com/vosonha89/react-native-base/main/__scripts__/use.sh | bash -s -- --name=masonvn.pricescout --displayName='Price Scout'
+#   curl -fsSL https://raw.githubusercontent.com/vosonha89/react-native-base/main/__scripts__/use.sh | bash -s -- --name=reactnative.myapp --displayName='My App'
 #
 set -euo pipefail
 
@@ -49,15 +49,15 @@ main() {
   # Interactive prompt if no name provided
   # Use /dev/tty because stdin is the pipe (curl | bash), not the terminal
   if [ -z "$NAME" ]; then
-    read -rp "  Project name (e.g. masonvn.pricescout or MyApp): " NAME </dev/tty
+    read -rp "  Project name (e.g. reactnative.myapp or MyApp): " NAME </dev/tty
   fi
 
   # Validate
   if [ -z "$NAME" ]; then
-    err "Name is required. Use --name=masonvn.pricescout or enter it interactively."
+    err "Name is required. Use --name=reactnative.myapp or enter it interactively."
   fi
   if ! echo "$NAME" | grep -qE '^[a-zA-Z][a-zA-Z0-9]*([._-][a-zA-Z0-9]+)*$'; then
-    err "Invalid name \"$NAME\". Must be PascalCase (MyApp), kebab (my-app), or reverse-DNS (masonvn.pricescout)."
+    err "Invalid name \"$NAME\". Must be PascalCase (MyApp), kebab (my-app), or reverse-DNS (reactnative.myapp)."
   fi
 
   # Derive default display name from the project name

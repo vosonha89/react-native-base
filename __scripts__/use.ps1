@@ -6,7 +6,7 @@ Scaffold a new project from the react-native-base template.
 Clones the template, renames it to your project name, and cleans up.
 
 .PARAMETER Name
-Optional project name (e.g. masonvn.pricescout or MyApp). If omitted, you'll be prompted.
+Optional project name (e.g. reactnative.myapp or MyApp). If omitted, you'll be prompted.
 
 .PARAMETER DisplayName
 Optional user-facing app name. If omitted, you'll be prompted.
@@ -20,7 +20,7 @@ irm https://raw.githubusercontent.com/vosonha89/react-native-base/main/__scripts
 
 .EXAMPLE
 # Non-interactive:
-irm https://raw.githubusercontent.com/vosonha89/react-native-base/main/__scripts__/use.ps1 -OutFile install.ps1; .\install.ps1 -Name "masonvn.pricescout" -DisplayName "Price Scout"
+irm https://raw.githubusercontent.com/vosonha89/react-native-base/main/__scripts__/use.ps1 -OutFile install.ps1; .\install.ps1 -Name "reactnative.myapp" -DisplayName "My App"
 #>
 [CmdletBinding()]
 param(
@@ -62,15 +62,15 @@ Write-Header
 
 # Interactive prompt if no name provided
 if ([string]::IsNullOrWhiteSpace($Name)) {
-  $Name = Read-Host "  Project name (e.g. masonvn.pricescout or MyApp)"
+  $Name = Read-Host "  Project name (e.g. reactnative.myapp or MyApp)"
 }
 
 # Validate
 if ([string]::IsNullOrWhiteSpace($Name)) {
-  Write-Err "Name is required. Use -Name masonvn.pricescout or enter it interactively."
+  Write-Err "Name is required. Use -Name reactnative.myapp or enter it interactively."
 }
 if ($Name -notmatch '^[a-zA-Z][a-zA-Z0-9]*([._-][a-zA-Z0-9]+)*$') {
-  Write-Err "Invalid name '$Name'. Must be PascalCase (MyApp), kebab (my-app), or reverse-DNS (masonvn.pricescout)."
+  Write-Err "Invalid name '$Name'. Must be PascalCase (MyApp), kebab (my-app), or reverse-DNS (reactnative.myapp)."
 }
 
 $kebab = ConvertTo-Kebab $Name

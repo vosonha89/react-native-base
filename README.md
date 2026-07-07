@@ -5,7 +5,7 @@ Scaffold a new React Native project from this template. No manual renaming neede
 The `--name` flag accepts **three formats**:
 - **PascalCase** — `MyApp` (legacy)
 - **kebab-case** — `my-app`
-- **reverse-DNS** — `masonvn.pricescout` (recommended)
+- **reverse-DNS** — `reactnative.myapp` (recommended)
 
 The `--displayName` flag (optional) sets the user-facing app name shown in the launcher.
 
@@ -18,7 +18,7 @@ curl -fsSL https://raw.githubusercontent.com/vosonha89/react-native-base/main/__
 ```
 
 The script will interactively ask for:
-1. **Project name** — e.g. `masonvn.pricescout` or `MyApp`
+1. **Project name** — e.g. `reactnative.myapp` or `MyApp`
 2. **Display name** — the user-facing app name (press Enter to accept the derived default)
 3. **Android/iOS namespace** — press Enter for the auto-derived default (`com.<name>`)
 
@@ -26,10 +26,10 @@ Or pass everything on one line:
 
 ```bash
 # Minimal (display name and namespace prompted)
-curl -fsSL https://raw.githubusercontent.com/vosonha89/react-native-base/main/__scripts__/use.sh | bash -s -- --name=masonvn.pricescout
+curl -fsSL https://raw.githubusercontent.com/vosonha89/react-native-base/main/__scripts__/use.sh | bash -s -- --name=reactnative.myapp
 
 # Full non-interactive
-curl -fsSL https://raw.githubusercontent.com/vosonha89/react-native-base/main/__scripts__/use.sh | bash -s -- --name=masonvn.pricescout --displayName='Price Scout' --namespace=com.masonvn.pricescout
+curl -fsSL https://raw.githubusercontent.com/vosonha89/react-native-base/main/__scripts__/use.sh | bash -s -- --name=reactnative.myapp --displayName='My App' --namespace=com.reactnative.myapp
 ```
 
 ## Windows (PowerShell)
@@ -39,7 +39,7 @@ curl -fsSL https://raw.githubusercontent.com/vosonha89/react-native-base/main/__
 irm https://raw.githubusercontent.com/vosonha89/react-native-base/main/__scripts__/use.ps1 | iex
 
 # Non-interactive
-irm https://raw.githubusercontent.com/vosonha89/react-native-base/main/__scripts__/use.ps1 -OutFile install.ps1; .\install.ps1 -Name "masonvn.pricescout" -DisplayName "Price Scout" -Namespace "com.masonvn.pricescout"
+irm https://raw.githubusercontent.com/vosonha89/react-native-base/main/__scripts__/use.ps1 -OutFile install.ps1; .\install.ps1 -Name "reactnative.myapp" -DisplayName "My App" -Namespace "com.reactnative.myapp"
 ```
 
 ---
@@ -50,10 +50,10 @@ irm https://raw.githubusercontent.com/vosonha89/react-native-base/main/__scripts
 
 ```bash
 # Latest template (with display name and namespace)
-npx degit --force vosonha89/react-native-base my-app && cd my-app && node __scripts__/use.js --name=masonvn.pricescout --displayName='Price Scout' --namespace=com.masonvn.pricescout
+npx degit --force vosonha89/react-native-base my-app && cd my-app && node __scripts__/use.js --name=reactnative.myapp --displayName='My App' --namespace=com.reactnative.myapp
 
 # Pinned to a specific version (interactive prompts fill in the rest)
-npx degit --force vosonha89/react-native-base#v0.0.1 my-app && cd my-app && node __scripts__/use.js --name=masonvn.pricescout
+npx degit --force vosonha89/react-native-base#v0.0.1 my-app && cd my-app && node __scripts__/use.js --name=reactnative.myapp
 ```
 
 > **Notes:**
@@ -73,7 +73,7 @@ npx degit --force vosonha89/react-native-base#v0.0.1 my-app && cd my-app && node
 3. Placeholders are replaced in `package.json`, `app.json`, and `.env`
 4. The **display name** is the user-facing label shown in the launcher (set only in `app.json` and `.env` `APP_TITLE`)
 5. The **name** is used for `package.json` (npm package name) and as the JS module name in `app.json`
-6. The namespace (e.g. `com.masonvn.pricescout`) is written to `app.json` as `androidNamespace`
+6. The namespace (e.g. `com.reactnative.myapp`) is written to `app.json` as `androidNamespace`
 7. The template `.git` folder is removed so the new project starts with a clean history
 8. Scaffolding scripts are automatically cleaned up
 
