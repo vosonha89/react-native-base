@@ -4,7 +4,7 @@
 #
 # Usage:
 #   curl -fsSL https://raw.githubusercontent.com/vosonha89/react-native-base/main/__scripts__/use.sh | bash
-#   curl -fsSL https://raw.githubusercontent.com/vosonha89/react-native-base/main/__scripts__/use.sh | bash -s -- --name=MyApp
+#   curl -fsSL https://raw.githubusercontent.com/vosonha89/react-native-base/main/__scripts__/use.sh | bash -s -- --name=masonvn.pricescout --displayName='Price Scout'
 #
 set -euo pipefail
 
@@ -30,10 +30,12 @@ pascal_to_kebab() {
 # ──────────────────── argument parsing ────────────────────
 
 NAME=""
+DISPLAY_NAME=""
 NAMESPACE=""
 for arg in "$@"; do
   case "$arg" in
     --name=*) NAME="${arg#--name=}" ;;
+    --displayName=*) DISPLAY_NAME="${arg#--displayName=}" ;;
     --namespace=*) NAMESPACE="${arg#--namespace=}" ;;
     *) ;;
   esac
@@ -47,21 +49,31 @@ main() {
   # Interactive prompt if no name provided
   # Use /dev/tty because stdin is the pipe (curl | bash), not the terminal
   if [ -z "$NAME" ]; then
-    read -rp "  Project name (PascalCase, e.g. MyApp): " NAME </dev/tty
+    read -rp "  Project name (e.g. masonvn.pricescout or MyApp): " NAME </dev/tty
   fi
 
   # Validate
   if [ -z "$NAME" ]; then
-    err "Name is required. Use --name=MyApp or enter it interactively."
+    err "Name is required. Use --name=masonvn.pricescout or enter it interactively."
   fi
-  if ! echo "$NAME" | grep -qE '^[A-Z][a-zA-Z0-9]*$'; then
-    err "Invalid name \"$NAME\". Must be PascalCase, e.g. MyApp, AwesomeProject."
+  if ! echo "$NAME" | grep -qE '^[a-zA-Z][a-zA-Z0-9]*([._-][a-zA-Z0-9]+)*$'; then
+    err "Invalid name \"$NAME\". Must be PascalCase (MyApp), kebab (my-app), or reverse-DNS (masonvn.pricescout)."
+  fi
+
+  # Derive default display name from the project name
+  KEBAB=$(pascal_to_kebab "$NAME")
+  DEFAULT_DISPLAY=$(echo "$NAME" | sed -E 's/[._-]/ /g; s/\b(\w)/\u\1/g')
+
+  # Interactive prompt for display name
+  if [ -z "$DISPLAY_NAME" ]; then
+    read -rp "  Display name (press Enter for default: $DEFAULT_DISPLAY): " DISPLAY_NAME </dev/tty
+    if [ -z "$DISPLAY_NAME" ]; then
+      DISPLAY_NAME="$DEFAULT_DISPLAY"
+    fi
   fi
 
   # Interactive prompt if no namespace provided
-  # Use /dev/tty because stdin is the pipe (curl | bash), not the terminal
-  KEBAB=$(pascal_to_kebab "$NAME")
-  DEFAULT_NS="com.$(echo "$KEBAB" | tr -d '-')"
+  DEFAULT_NS="com.$(echo "$NAME" | tr '[:upper:]' '[:lower:]')"
   if [ -z "$NAMESPACE" ]; then
     read -rp "  Android/iOS namespace (press Enter for default: $DEFAULT_NS): " NAMESPACE </dev/tty
     if [ -z "$NAMESPACE" ]; then
@@ -79,30 +91,31 @@ main() {
   echo ""
 
   # Clone template
-  if [ -d "$KEBAB" ]; then
-    err "Directory \"$KEBAB\" already exists. Remove it first or choose a different name."
+  PROJECT_DIR="$(echo "$KEBAB" | tr '.' '-')"
+  if [ -d "$PROJECT_DIR" ]; then
+    err "Directory \"$PROJECT_DIR\" already exists. Remove it first or choose a different name."
   fi
 
-  ok "Cloning template → ./$KEBAB/"
-  git clone --depth 1 "https://github.com/vosonha89/react-native-base.git" "$KEBAB"
+  ok "Cloning template → ./$PROJECT_DIR/"
+  git clone --depth 1 "https://github.com/vosonha89/react-native-base.git" "$PROJECT_DIR"
 
   echo ""
 
   # Run the inner rename script with --no-install so it never reads from stdin
-  ok "Renaming project → $NAME"
-  (cd "$KEBAB" && node __scripts__/use.js --name="$NAME" --namespace="$NAMESPACE" --no-install)
+  ok "Renaming project → $DISPLAY_NAME"
+  (cd "$PROJECT_DIR" && node __scripts__/use.js --name="$NAME" --displayName="$DISPLAY_NAME" --namespace="$NAMESPACE" --no-install)
 
   echo ""
 
   # Cleanup
   ok "Removing scaffolding scripts"
-  rm -rf "$KEBAB/__scripts__/use.js" "$KEBAB/__scripts__/use.sh"
+  rm -rf "$PROJECT_DIR/__scripts__/use.js" "$PROJECT_DIR/__scripts__/use.sh"
 
   echo ""
-  echo -e "  ${GREEN}✨  Project \"$NAME\" is ready!${NC}"
+  echo -e "  ${GREEN}✨  Project \"$DISPLAY_NAME\" is ready!${NC}"
   echo ""
   echo "    Next steps:"
-  echo "      cd $KEBAB"
+  echo "      cd $PROJECT_DIR"
   echo "      npm install"
   echo "      npx react-native eject"
   echo "      npm run start:android    # or: npm run start:ios"
